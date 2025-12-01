@@ -1,3 +1,7 @@
+# FIX: Disable debuginfo package generation to prevent "Empty %files file" errors
+# and save massive amounts of disk space/time.
+%global debug_package %{nil}
+
 Name:       kernel-chromiumos
 Version:    6.6
 Release:    1%{?dist}
@@ -65,6 +69,11 @@ mkdir -p %{buildroot}/lib/modules
 
 # Install modules
 make modules_install INSTALL_MOD_PATH=%{buildroot}
+
+# FIX 5: Remove absolute symlinks that point to the build directory
+# These cause RPM build errors because the target doesn't exist on the install machine
+rm -f %{buildroot}/lib/modules/*/build
+rm -f %{buildroot}/lib/modules/*/source
 
 # Install the kernel image
 cp arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{version}-chromiumos
