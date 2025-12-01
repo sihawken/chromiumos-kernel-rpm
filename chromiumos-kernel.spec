@@ -30,6 +30,8 @@ BuildRequires:  /usr/bin/lzma
 # FIX: Added kmod because 'make modules_install' requires depmod
 BuildRequires:  kmod
 
+Requires:       coreutils, kmod, systemd-udev, dracut, binutils
+
 %description
 This is the Linux kernel built from the Chromium OS source tree.
 
