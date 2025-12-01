@@ -16,6 +16,7 @@ URL:        https://chromium.googlesource.com/chromiumos/third_party/kernel
 #    WARNING: Installing this will REMOVE kernel, kernel-core, and kernel-modules.
 Conflicts:  kernel
 Conflicts:  kernel-core
+Conflicts:  kernel-modules-core
 Conflicts:  kernel-modules
 
 # 2. PROVIDES: essential virtual packages to satisfy dependencies
