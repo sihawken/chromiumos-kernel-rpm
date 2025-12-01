@@ -32,17 +32,24 @@ make mrproper
 ./chromeos/scripts/prepareconfig chromiumos-x86_64-generic
 
 # FIX 3: Disable Werror to prevent failures on newer Fedora GCC versions
-# This handles the "discards 'const' qualifier" error in libbpf
 ./scripts/config --disable CONFIG_WERROR
+
+# FIX 4: Patch Makefiles to force C11 standard (fixing C23 bool/false errors)
+# Fedora GCC defaults to C23, breaking legacy kernel code.
+# KCFLAGS isn't enough because realmode/boot code ignores it.
+
+# 4a. Force standard for host tools (fix libbpf/tools errors)
+sed -i 's/^HOSTCFLAGS\s*:=/HOSTCFLAGS\t:= -std=gnu11 /' Makefile
+
+# 4b. Force standard for x86 Realmode boot code (fix wakemain.c errors)
+sed -i 's/^REALMODE_CFLAGS\s*:=/REALMODE_CFLAGS\t:= -std=gnu11 /' arch/x86/Makefile
 
 # Ensure the config is updated for the current kernel version without user prompts
 make olddefconfig
 
 # Compile the kernel image and modules
-# WERROR=0 provides an extra safety net for tools built during the process
-# KCFLAGS and HOSTCFLAGS added to suppress specific libbpf const errors on newer GCC
-# FIX 4: Added -std=gnu11 to KCFLAGS and HOSTCFLAGS. 
-# Fedora GCC defaults to C23 which breaks kernel bool/false typedefs.
+# WERROR=0 provides an extra safety net
+# We keep the flags here too as a backup for the main kernel objects
 make %{?_smp_mflags} WERROR=0 \
     KCFLAGS="-Wno-error=discarded-qualifiers -std=gnu11" \
     HOSTCFLAGS="-Wno-error=discarded-qualifiers -std=gnu11" \
