@@ -9,6 +9,15 @@ Summary:    The Linux kernel from Chromium OS
 License:    GPLv2
 URL:        https://chromium.googlesource.com/chromiumos/third_party/kernel
 
+Conflicts:  kernel
+Conflicts:  kernel-core
+Conflicts:  kernel-modules
+
+Provides:   kernel = %{version}-%{release}
+Provides:   kernel-core = %{version}-%{release}
+Provides:   kernel-modules = %{version}-%{release}
+Provides:   kernel-uname-r = %{version}-%{release}.%{_arch}
+
 # This must match the tarball name created by your Makefile
 Source0:    linux-chromiumos.tar.xz
 
