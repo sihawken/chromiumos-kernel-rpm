@@ -11,7 +11,7 @@ srpm:
 	tar --exclude-vcs -cJf rpmbuild/SOURCES/linux-chromiumos.tar.xz chromium-kernel
 	
 	# Copy the spec file to the build directory
-	cp kernel-chromiumos.spec rpmbuild/SPECS/
+	cp chromiumos-kernel.spec rpmbuild/SPECS/
 	
 	# Build the SRPM
 	rpmbuild \
@@ -19,4 +19,4 @@ srpm:
 		--define "_sourcedir $$(pwd)/rpmbuild/SOURCES" \
 		--define "_specdir $$(pwd)/rpmbuild/SPECS" \
 		--define "_srcrpmdir $(outdir)" \
-		-bs rpmbuild/SPECS/kernel-chromiumos.spec
+		-bs rpmbuild/SPECS/chromiumos-kernel.spec

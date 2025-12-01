@@ -2,7 +2,7 @@
 # and save massive amounts of disk space/time.
 %global debug_package %{nil}
 
-Name:       kernel-chromiumos
+Name:       chromiumos-kernel
 Version:    6.6
 Release:    1%{?dist}
 Summary:    The Linux kernel from Chromium OS
