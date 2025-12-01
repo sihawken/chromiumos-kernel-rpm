@@ -5,11 +5,11 @@ Summary:    The Linux kernel from Chromium OS
 License:    GPLv2
 URL:        https://chromium.googlesource.com/chromiumos/third_party/kernel
 
-# This must match the tarball name in the Makefile
+# This must match the tarball name created by your Makefile
 Source0:    linux-chromiumos.tar.xz
 
 BuildRequires:  gcc, make, flex, bison, openssl-devel, elfutils-libelf-devel, dwarves
-BuildRequires:  bc, perl-interpreter
+BuildRequires:  bc, perl-interpreter, git
 
 %description
 This is the Linux kernel built from the Chromium OS source tree.
@@ -19,20 +19,21 @@ This is the Linux kernel built from the Chromium OS source tree.
 %setup -q -n chromium-kernel
 
 %build
+# FIX 1: Export the required environment variable
+export CHROMEOS_KERNEL_FAMILY=chromeos
+
 # Clean up any stale configs
 make mrproper
-# Merging specific chromeos configs (example for x86_64 generic)
-./chromeos/scripts/prepareconfig chromiumos-x86_64
-make olddefconfig
-make %{?_smp_mflags} bzImage modules
 
-# Generate a default config based on the current architecture
-# Chromium OS often uses specific configs (e.g., chromeos/config/x86_64/common.config)
-# You might need to manually cat those into .config or use 'make defconfig'
-make defconfig
+# FIX 2: Use the Chromium OS specific config script
+# Adjust 'chromiumos-x86_64' to your target architecture if different (e.g., chromiumos-arm64)
+# This script sets up the .config file based on ChromeOS defaults
+./chromeos/scripts/prepareconfig chromiumos-x86_64
+
+# Ensure the config is updated for the current kernel version without user prompts
+make olddefconfig
 
 # Compile the kernel image and modules
-# 'bzImage' for x86_64, 'zImage' for ARM usually
 make %{?_smp_mflags} bzImage modules
 
 %install
@@ -43,7 +44,6 @@ mkdir -p %{buildroot}/lib/modules
 make modules_install INSTALL_MOD_PATH=%{buildroot}
 
 # Install the kernel image
-# Note: Copr builds run in a chroot, so we just place files in the buildroot
 cp arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{version}-chromiumos
 cp System.map %{buildroot}/boot/System.map-%{version}-chromiumos
 cp .config %{buildroot}/boot/config-%{version}-chromiumos
@@ -58,5 +58,6 @@ rm -rf %{buildroot}/lib/firmware
 /boot/config*
 
 %changelog
-* Mon Dec 01 2024 6.6-1
+# Using Mon Dec 01 2025 (today's date relative to the example) to pass validation.
+* Mon Dec 01 2025 User <user@example.com> - 6.6-1
 - Initial build
