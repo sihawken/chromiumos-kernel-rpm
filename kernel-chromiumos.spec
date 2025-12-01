@@ -41,9 +41,11 @@ make olddefconfig
 # Compile the kernel image and modules
 # WERROR=0 provides an extra safety net for tools built during the process
 # KCFLAGS and HOSTCFLAGS added to suppress specific libbpf const errors on newer GCC
+# FIX 4: Added -std=gnu11 to KCFLAGS and HOSTCFLAGS. 
+# Fedora GCC defaults to C23 which breaks kernel bool/false typedefs.
 make %{?_smp_mflags} WERROR=0 \
-    KCFLAGS="-Wno-error=discarded-qualifiers" \
-    HOSTCFLAGS="-Wno-error=discarded-qualifiers" \
+    KCFLAGS="-Wno-error=discarded-qualifiers -std=gnu11" \
+    HOSTCFLAGS="-Wno-error=discarded-qualifiers -std=gnu11" \
     bzImage modules
 
 %install
