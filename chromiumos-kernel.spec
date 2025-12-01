@@ -66,7 +66,8 @@ mkdir -p %{buildroot}/lib/modules/%{version}
 make modules_install INSTALL_MOD_PATH=%{buildroot}
 
 # FIX: Install kernel image to /lib/modules/%{version}/vmlinuz
-# This is the modern Fedora standard. kernel-install will copy it to /boot.
+# This is the modern Fedora standard.
+# kernel-install will copy it to /boot.
 install -D -m 755 arch/x86/boot/bzImage %{buildroot}/lib/modules/%{version}/vmlinuz
 cp System.map %{buildroot}/lib/modules/%{version}/System.map
 cp .config %{buildroot}/lib/modules/%{version}/config
@@ -98,17 +99,42 @@ touch %{buildroot}/lib/modules/%{version}/source
 # 1. Generate module dependencies immediately so dracut can find them
 /sbin/depmod -a %{version}
 
-# 2. Add the kernel (triggers dracut to build initramfs)
-# SKIP if running on an ostree system (rpm-ostree handles this automatically)
-if [ ! -e /run/ostree-booted ]; then
+# 2. Kernel Installation Logic
+if [ -e /run/ostree-booted ]; then
+    # SCENARIO 1: Live Ostree System (e.g., Silverblue/Kinoite update)
+    # Do nothing. rpm-ostree will detect the new kernel files in /lib/modules
+    # and handle initramfs generation/deployment automatically.
+    :
+elif [ -n "$container" ] || [ -f /run/.containerenv ] || [ -f /.dockerenv ]; then
+    # SCENARIO 2: Container Build (e.g., podman build for OCI/Atomic image)
+    # Standard kernel-install fails here with "cross-device link" errors.
+    # We manually generate the initramfs using the fix for OCI builds.
+    echo "Container build detected. Generating initramfs manually..."
+    
+    # Create the initramfs in /tmp to avoid cross-device link errors during generation
+    # We use the specific flags required for Atomic/OSTree images
+    /usr/bin/dracut \
+        --tmpdir /tmp/ \
+        --no-hostonly \
+        --kver "%{version}" \
+        --reproducible \
+        --add ostree \
+        -f /tmp/initramfs.img
+        
+    # Move it into place (mv works across layers if source is in /tmp)
+    mv /tmp/initramfs.img /lib/modules/%{version}/initramfs.img
+else
+    # SCENARIO 3: Standard RPM System (e.g., Fedora Workstation)
+    # Use the standard system script to add the kernel and update bootloader.
     /bin/kernel-install add %{version} /lib/modules/%{version}/vmlinuz || :
 fi
 
 %preun
 if [ $1 -eq 0 ]; then
-    # SKIP removal on ostree systems
+    # SCENARIO: Package removal
+    # Skip if running on ostree (rpm-ostree handles cleanup)
     if [ ! -e /run/ostree-booted ]; then
-        /bin/kernel-install remove %{version} || :
+         /bin/kernel-install remove %{version} || :
     fi
 fi
 
