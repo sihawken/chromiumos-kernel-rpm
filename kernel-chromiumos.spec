@@ -31,11 +31,20 @@ make mrproper
 # 'chromiumos-x86_64-generic' corresponds to chromiumos-x86_64-generic.flavour.config
 ./chromeos/scripts/prepareconfig chromiumos-x86_64-generic
 
+# FIX 3: Disable Werror to prevent failures on newer Fedora GCC versions
+# This handles the "discards 'const' qualifier" error in libbpf
+./scripts/config --disable CONFIG_WERROR
+
 # Ensure the config is updated for the current kernel version without user prompts
 make olddefconfig
 
 # Compile the kernel image and modules
-make %{?_smp_mflags} bzImage modules
+# WERROR=0 provides an extra safety net for tools built during the process
+# KCFLAGS and HOSTCFLAGS added to suppress specific libbpf const errors on newer GCC
+make %{?_smp_mflags} WERROR=0 \
+    KCFLAGS="-Wno-error=discarded-qualifiers" \
+    HOSTCFLAGS="-Wno-error=discarded-qualifiers" \
+    bzImage modules
 
 %install
 mkdir -p %{buildroot}/boot
