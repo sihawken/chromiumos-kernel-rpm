@@ -97,17 +97,27 @@ touch %{buildroot}/lib/modules/%{version}/source
 %post
 # 1. Generate module dependencies immediately so dracut can find them
 /sbin/depmod -a %{version}
+
 # 2. Add the kernel (triggers dracut to build initramfs)
-/bin/kernel-install add %{version} /lib/modules/%{version}/vmlinuz || :
+# SKIP if running on an ostree system (rpm-ostree handles this automatically)
+if [ ! -e /run/ostree-booted ]; then
+    /bin/kernel-install add %{version} /lib/modules/%{version}/vmlinuz || :
+fi
 
 %preun
 if [ $1 -eq 0 ]; then
-    /bin/kernel-install remove %{version} || :
+    # SKIP removal on ostree systems
+    if [ ! -e /run/ostree-booted ]; then
+        /bin/kernel-install remove %{version} || :
+    fi
 fi
 
 %posttrans
 # Re-run kernel-install to ensure bootloader is updated if something changed
-/bin/kernel-install add %{version} /lib/modules/%{version}/vmlinuz || :
+# SKIP if running on an ostree system
+if [ ! -e /run/ostree-booted ]; then
+    /bin/kernel-install add %{version} /lib/modules/%{version}/vmlinuz || :
+fi
 
 %changelog
 * Mon Dec 01 2025 User <user@example.com> - 6.1.145-1
