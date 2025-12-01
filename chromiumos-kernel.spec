@@ -1,121 +1,114 @@
 # FIX: Disable debuginfo package generation to prevent "Empty %files file" errors
-# and save massive amounts of disk space/time.
 %global debug_package %{nil}
 
 Name:       chromiumos-kernel
+# Matches the specific version from your source tree (6.1.145)
 Version:    6.1.145
 Release:    1%{?dist}
 Summary:    The Linux kernel from Chromium OS
 License:    GPLv2
 URL:        https://chromium.googlesource.com/chromiumos/third_party/kernel
 
+# -----------------------------------------------------------------------------
+# CRITICAL CONFIGURATION: SINGLE KERNEL MODE
+# -----------------------------------------------------------------------------
+# 1. CONFLICTS: Explicitly conflict with stock Fedora kernels.
+#    WARNING: Installing this will REMOVE kernel, kernel-core, and kernel-modules.
 Conflicts:  kernel
 Conflicts:  kernel-core
 Conflicts:  kernel-modules
 
+# 2. PROVIDES: essential virtual packages to satisfy dependencies
 Provides:   kernel = %{version}-%{release}
 Provides:   kernel-core = %{version}-%{release}
 Provides:   kernel-modules = %{version}-%{release}
 Provides:   kernel-uname-r = %{version}-%{release}.%{_arch}
+# -----------------------------------------------------------------------------
 
-# This must match the tarball name created by your Makefile
 Source0:    linux-chromiumos.tar.xz
 
 BuildRequires:  gcc, make, flex, bison, openssl-devel, elfutils-libelf-devel, dwarves
 BuildRequires:  bc, perl-interpreter, git
-# FIX: Added python3 because chromeos build scripts require it
 BuildRequires:  python3
-# FIX: Added lzma command because Chromium kernels use CONFIG_KERNEL_LZMA
 BuildRequires:  /usr/bin/lzma
-# FIX: Added kmod because 'make modules_install' requires depmod
 BuildRequires:  kmod
-
-Requires:       coreutils, kmod, systemd-udev, dracut, binutils
+# Runtime dependencies required for creating initramfs
+Requires:       coreutils, kmod, dracut, binutils, systemd-udev
 
 %description
 This is the Linux kernel built from the Chromium OS source tree.
+This package replaces the standard system kernel.
 
 %prep
-# Unpack the source; 'chromium-kernel' matches the directory name inside the tarball
 %setup -q -n chromium-kernel
 
 %build
-# FIX 1: Export the required environment variable
 export CHROMEOS_KERNEL_FAMILY=chromeos
-
-# Clean up any stale configs
 make mrproper
-
-# FIX 2: Use the specific flavor found in your screenshot
-# 'chromiumos-x86_64-generic' corresponds to chromiumos-x86_64-generic.flavour.config
 ./chromeos/scripts/prepareconfig chromiumos-x86_64-generic
-
-# FIX 3: Disable Werror to prevent failures on newer Fedora GCC versions
 ./scripts/config --disable CONFIG_WERROR
 
-# FIX 4: Patch Makefiles to force C11 standard (fixing C23 bool/false errors)
-# Fedora GCC defaults to C23, breaking legacy kernel code.
-# KCFLAGS isn't enough because realmode/boot code ignores it.
-
-# 4a. Force standard for host tools (fix libbpf/tools errors)
+# Patch Makefiles for GCC 15/C11 compatibility
 sed -i 's/^HOSTCFLAGS\s*:=/HOSTCFLAGS\t:= -std=gnu11 /' Makefile
-
-# 4b. Force standard for x86 Realmode boot code (fix wakemain.c errors)
 sed -i 's/^REALMODE_CFLAGS\s*:=/REALMODE_CFLAGS\t:= -std=gnu11 /' arch/x86/Makefile
 
-# Ensure the config is updated for the current kernel version without user prompts
 make olddefconfig
-
-# Compile the kernel image and modules
-# WERROR=0 provides an extra safety net
-# We keep the flags here too as a backup for the main kernel objects
 make %{?_smp_mflags} WERROR=0 \
     KCFLAGS="-Wno-error=discarded-qualifiers -std=gnu11" \
     HOSTCFLAGS="-Wno-error=discarded-qualifiers -std=gnu11" \
     bzImage modules
 
 %install
-mkdir -p %{buildroot}/boot
-mkdir -p %{buildroot}/lib/modules
+# Create the standard directory structure
+mkdir -p %{buildroot}/lib/modules/%{version}
 
 # Install modules
 make modules_install INSTALL_MOD_PATH=%{buildroot}
 
-# FIX 5: Remove absolute symlinks that point to the build directory
-# These cause RPM build errors because the target doesn't exist on the install machine
-rm -f %{buildroot}/lib/modules/*/build
-rm -f %{buildroot}/lib/modules/*/source
+# FIX: Install kernel image to /lib/modules/%{version}/vmlinuz
+# This is the modern Fedora standard. kernel-install will copy it to /boot.
+install -D -m 755 arch/x86/boot/bzImage %{buildroot}/lib/modules/%{version}/vmlinuz
+cp System.map %{buildroot}/lib/modules/%{version}/System.map
+cp .config %{buildroot}/lib/modules/%{version}/config
 
-# Install the kernel image
-cp arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{version}-chromiumos
-cp System.map %{buildroot}/boot/System.map-%{version}-chromiumos
-cp .config %{buildroot}/boot/config-%{version}-chromiumos
-
-# Cleanup firmware to avoid conflicts with linux-firmware package
+# Cleanup firmware
 rm -rf %{buildroot}/lib/firmware
 
-%files
-/lib/modules/*
-/boot/vmlinuz*
-/boot/System.map*
-/boot/config*
+# Fix symlinks: Make them point to /dev/null or remove them to avoid build errors
+# We will mark them as %ghost in the %files section
+rm -f %{buildroot}/lib/modules/%{version}/build
+rm -f %{buildroot}/lib/modules/%{version}/source
+touch %{buildroot}/lib/modules/%{version}/build
+touch %{buildroot}/lib/modules/%{version}/source
 
-# FIX 8: Add Scriptlets to generate initramfs (dracut) and update bootloader
-# This fixes the "dracut module missing" errors by ensuring we target OUR kernel,
-# not the host kernel.
+%files
+%dir /lib/modules/%{version}
+/lib/modules/%{version}/kernel
+/lib/modules/%{version}/modules.*
+/lib/modules/%{version}/vmlinuz
+/lib/modules/%{version}/System.map
+/lib/modules/%{version}/config
+# Ghost files (owned by package but not shipped with content)
+%ghost /lib/modules/%{version}/build
+%ghost /lib/modules/%{version}/source
+# We also ghost the initramfs so RPM knows it belongs to us after creation
+%ghost /boot/initramfs-%{version}.img
+
 %post
-/bin/kernel-install add "%{version}" /lib/modules/"%{version}"/vmlinuz || :
+# 1. Generate module dependencies immediately so dracut can find them
+/sbin/depmod -a %{version}
+# 2. Add the kernel (triggers dracut to build initramfs)
+/bin/kernel-install add %{version} /lib/modules/%{version}/vmlinuz || :
 
 %preun
-# Only run on uninstall, not upgrade
 if [ $1 -eq 0 ]; then
-    /bin/kernel-install remove "%{version}" || :
+    /bin/kernel-install remove %{version} || :
 fi
 
 %posttrans
-# Ensure bootloader is updated after transaction completes
-/bin/kernel-install add "%{version}" /lib/modules/"%{version}"/vmlinuz || :
+# Re-run kernel-install to ensure bootloader is updated if something changed
+/bin/kernel-install add %{version} /lib/modules/%{version}/vmlinuz || :
 
 %changelog
-* Mon Dec 01 2025 User <user@example.com> - 6.6-1
+* Mon Dec 01 2025 User <user@example.com> - 6.1.145-1
 - Initial build
