@@ -25,14 +25,9 @@ export CHROMEOS_KERNEL_FAMILY=chromeos
 # Clean up any stale configs
 make mrproper
 
-# Debugging: List available configs in the log so we can see what exists if this fails
-echo "Listing available x86_64 flavors for debugging:"
-ls chromeos/config/x86_64/ || true
-
-# FIX 2: Use 'chromeos-intel' instead of 'chromiumos-x86_64'
-# Recent ChromeOS branches (6.6+) often use 'chromeos-intel' as the primary x86 flavor.
-# This generally works for generic x86_64 booting.
-./chromeos/scripts/prepareconfig chromeos-intel
+# FIX 2: Use the specific flavor found in your screenshot
+# 'chromiumos-x86_64-generic' corresponds to chromiumos-x86_64-generic.flavour.config
+./chromeos/scripts/prepareconfig chromiumos-x86_64-generic
 
 # Ensure the config is updated for the current kernel version without user prompts
 make olddefconfig
@@ -62,7 +57,5 @@ rm -rf %{buildroot}/lib/firmware
 /boot/config*
 
 %changelog
-# FIX 3: Corrected the date. Dec 1 2024 was a Sunday. 
-# Using Mon Dec 01 2025 (today's date relative to the example) to pass validation.
 * Mon Dec 01 2025 User <user@example.com> - 6.6-1
 - Initial build
