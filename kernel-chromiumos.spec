@@ -12,6 +12,8 @@ BuildRequires:  gcc, make, flex, bison, openssl-devel, elfutils-libelf-devel, dw
 BuildRequires:  bc, perl-interpreter, git
 # FIX: Added python3 because chromeos build scripts require it
 BuildRequires:  python3
+# FIX: Added lzma command because Chromium kernels use CONFIG_KERNEL_LZMA
+BuildRequires:  /usr/bin/lzma
 
 %description
 This is the Linux kernel built from the Chromium OS source tree.
