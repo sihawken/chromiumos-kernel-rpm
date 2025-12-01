@@ -21,6 +21,10 @@ This is the Linux kernel built from the Chromium OS source tree.
 %build
 # Clean up any stale configs
 make mrproper
+# Merging specific chromeos configs (example for x86_64 generic)
+./chromeos/scripts/prepareconfig chromiumos-x86_64
+make olddefconfig
+make %{?_smp_mflags} bzImage modules
 
 # Generate a default config based on the current architecture
 # Chromium OS often uses specific configs (e.g., chromeos/config/x86_64/common.config)
