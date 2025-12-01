@@ -14,6 +14,8 @@ BuildRequires:  bc, perl-interpreter, git
 BuildRequires:  python3
 # FIX: Added lzma command because Chromium kernels use CONFIG_KERNEL_LZMA
 BuildRequires:  /usr/bin/lzma
+# FIX: Added kmod because 'make modules_install' requires depmod
+BuildRequires:  kmod
 
 %description
 This is the Linux kernel built from the Chromium OS source tree.
