@@ -97,6 +97,26 @@ rm -rf %{buildroot}/lib/firmware
 /boot/vmlinuz*
 /boot/System.map*
 /boot/config*
+/boot/kernel-version-chromiumos
+
+# FIX 8: Add Scriptlets to generate initramfs (dracut) and update bootloader
+# This fixes the "dracut module missing" errors by ensuring we target OUR kernel,
+# not the host kernel.
+%post
+KERNEL_VERSION=$(cat /boot/kernel-version-chromiumos)
+/bin/kernel-install add "$KERNEL_VERSION" /lib/modules/"$KERNEL_VERSION"/vmlinuz || :
+
+%preun
+# Only run on uninstall, not upgrade
+if [ $1 -eq 0 ]; then
+    KERNEL_VERSION=$(cat /boot/kernel-version-chromiumos)
+    /bin/kernel-install remove "$KERNEL_VERSION" || :
+fi
+
+%posttrans
+# Ensure bootloader is updated after transaction completes
+KERNEL_VERSION=$(cat /boot/kernel-version-chromiumos)
+/bin/kernel-install add "$KERNEL_VERSION" /lib/modules/"$KERNEL_VERSION"/vmlinuz || :
 
 %changelog
 * Mon Dec 01 2025 User <user@example.com> - 6.6-1
