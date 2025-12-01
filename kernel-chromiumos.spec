@@ -10,6 +10,8 @@ Source0:    linux-chromiumos.tar.xz
 
 BuildRequires:  gcc, make, flex, bison, openssl-devel, elfutils-libelf-devel, dwarves
 BuildRequires:  bc, perl-interpreter, git
+# FIX: Added python3 because chromeos build scripts require it
+BuildRequires:  python3
 
 %description
 This is the Linux kernel built from the Chromium OS source tree.
