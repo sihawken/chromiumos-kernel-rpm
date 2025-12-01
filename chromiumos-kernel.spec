@@ -3,7 +3,7 @@
 %global debug_package %{nil}
 
 Name:       chromiumos-kernel
-Version:    6.6
+Version:    6.1.145
 Release:    1%{?dist}
 Summary:    The Linux kernel from Chromium OS
 License:    GPLv2
