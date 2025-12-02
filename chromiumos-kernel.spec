@@ -114,12 +114,8 @@ rm -f %{buildroot}/lib/modules/*/source
 /bin/kernel-install add %{version}-chromiumos /boot/vmlinuz-%{version}-chromiumos || :
 
 %files
-# The directory usually contains the specific kernel version, so we use a wildcard to be safe
-# or explicitly match the directory created by 'make modules_install'
-/lib/modules/*
-/boot/vmlinuz-%{version}-chromiumos
-/boot/System.map-%{version}-chromiumos
-/boot/config-%{version}-chromiumos
+# This wildcard now covers the vmlinuz, config, and System.map inside the directory
+/lib/modules/%{version}-chromiumos/
 
 %changelog
 * Mon Dec 01 2025 User <user@example.com> - 6.6-1
