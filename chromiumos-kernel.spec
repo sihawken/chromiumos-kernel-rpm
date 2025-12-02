@@ -72,31 +72,36 @@ make %{?_smp_mflags} WERROR=0 \
     HOSTCFLAGS="-Wno-error=discarded-qualifiers -std=gnu11" \
     bzImage modules
 
-%install
-mkdir -p %{buildroot}/boot
-mkdir -p %{buildroot}/lib/modules
+%post
+# Triggers kernel-install to create the initramfs and update bootloader entries
+# usage: kernel-install add <kernel-version> <kernel-image>
+/bin/kernel-install add %{version}-chromiumos /boot/vmlinuz-%{version}-chromiumos || :
 
-# Install modules
-make modules_install INSTALL_MOD_PATH=%{buildroot}
+%preun
+# Removes the kernel from bootloader entries and deletes initramfs upon uninstallation
+/bin/kernel-install remove %{version}-chromiumos || :
 
-# FIX 5: Remove absolute symlinks that point to the build directory
-# These cause RPM build errors because the target doesn't exist on the install machine
-rm -f %{buildroot}/lib/modules/*/build
-rm -f %{buildroot}/lib/modules/*/source
-
-# Install the kernel image
-cp arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{version}-chromiumos
-cp System.map %{buildroot}/boot/System.map-%{version}-chromiumos
-cp .config %{buildroot}/boot/config-%{version}-chromiumos
-
-# Cleanup firmware to avoid conflicts with linux-firmware package
-rm -rf %{buildroot}/lib/firmware
+%posttrans
+# Ensures everything is clean after the transaction
+/bin/kernel-install add %{version}-chromiumos /boot/vmlinuz-%{version}-chromiumos || :
 
 %files
+# The kernel modules directory
+# We use a wildcard for the version to capture the directory created by 'make modules_install'
+# /lib/modules/6.1.145-chromiumos/
 /lib/modules/*
-/boot/vmlinuz*
-/boot/System.map*
-/boot/config*
+
+# The Kernel Image
+# Matches: cp arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{version}-chromiumos
+/boot/vmlinuz-%{version}-chromiumos
+
+# System Map (Symbol table, useful for debugging/depmod)
+# Matches: cp System.map %{buildroot}/boot/System.map-%{version}-chromiumos
+/boot/System.map-%{version}-chromiumos
+
+# Kernel Configuration
+# Matches: cp .config %{buildroot}/boot/config-%{version}-chromiumos
+/boot/config-%{version}-chromiumos
 
 %changelog
 * Mon Dec 01 2025 User <user@example.com> - 6.6-1
