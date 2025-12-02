@@ -85,9 +85,12 @@ mkdir -p %{buildroot}/lib/modules
 # DEPMOD=/bin/true prevents depmod from running during the build (it runs on the target system instead)
 make modules_install INSTALL_MOD_PATH=%{buildroot} DEPMOD=/bin/true
 
-# Install the kernel image (bzImage) to /boot
-# Rename it to match the version string used in %post
-install -D -m 755 arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{version}-chromiumos
+# Install the kernel image to /lib/modules/<version>/vmlinuz (Required for OSTree)
+install -D -m 755 arch/x86/boot/bzImage %{buildroot}/lib/modules/%{version}-chromiumos/vmlinuz
+
+# Install System.map and config to the same directory
+install -D -m 644 System.map %{buildroot}/lib/modules/%{version}-chromiumos/System.map
+install -D -m 644 .config %{buildroot}/lib/modules/%{version}-chromiumos/config
 
 # Install the System.map and .config for debugging and consistency
 install -D -m 644 System.map %{buildroot}/boot/System.map-%{version}-chromiumos
