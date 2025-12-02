@@ -94,10 +94,6 @@ install -D -m 755 arch/x86/boot/bzImage %{buildroot}/lib/modules/%{version}-chro
 install -D -m 644 System.map %{buildroot}/lib/modules/%{version}-chromiumos/System.map
 install -D -m 644 .config %{buildroot}/lib/modules/%{version}-chromiumos/config
 
-# Install the System.map and .config for debugging and consistency
-install -D -m 644 System.map %{buildroot}/boot/System.map-%{version}-chromiumos
-install -D -m 644 .config %{buildroot}/boot/config-%{version}-chromiumos
-
 # Cleanup: Remove 'build' and 'source' symlinks that point to the build environment
 rm -f %{buildroot}/lib/modules/*/build
 rm -f %{buildroot}/lib/modules/*/source
@@ -105,7 +101,7 @@ rm -f %{buildroot}/lib/modules/*/source
 %post
 # Triggers kernel-install to create the initramfs and update bootloader entries
 # The kernel version argument must match the directory name in /lib/modules/
-/bin/kernel-install add %{version}-chromiumos /boot/vmlinuz-%{version}-chromiumos || :
+/bin/kernel-install add %{version}-chromiumos /lib/modules/%{version}-chromiumos/vmlinuz|| :
 
 %preun
 # Removes the kernel from bootloader entries and deletes initramfs upon uninstallation
@@ -113,7 +109,7 @@ rm -f %{buildroot}/lib/modules/*/source
 
 %posttrans
 # Ensures everything is clean after the transaction
-/bin/kernel-install add %{version}-chromiumos /boot/vmlinuz-%{version}-chromiumos || :
+/bin/kernel-install add %{version}-chromiumos /lib/modules/%{version}-chromiumos/vmlinuz || :
 
 %files
 # This wildcard now covers the vmlinuz, config, and System.map inside the directory
