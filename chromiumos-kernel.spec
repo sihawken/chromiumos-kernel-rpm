@@ -72,9 +72,30 @@ make %{?_smp_mflags} WERROR=0 \
     HOSTCFLAGS="-Wno-error=discarded-qualifiers -std=gnu11" \
     bzImage modules
 
+%install
+# Create the directory structure in the buildroot
+mkdir -p %{buildroot}/boot
+mkdir -p %{buildroot}/lib/modules
+
+# Install kernel modules to the buildroot
+# DEPMOD=/bin/true prevents depmod from running during the build (it runs on the target system instead)
+make modules_install INSTALL_MOD_PATH=%{buildroot} DEPMOD=/bin/true
+
+# Install the kernel image (bzImage) to /boot
+# Rename it to match the version string used in %post
+install -D -m 755 arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{version}-chromiumos
+
+# Install the System.map and .config for debugging and consistency
+install -D -m 644 System.map %{buildroot}/boot/System.map-%{version}-chromiumos
+install -D -m 644 .config %{buildroot}/boot/config-%{version}-chromiumos
+
+# Cleanup: Remove 'build' and 'source' symlinks that point to the build environment
+rm -f %{buildroot}/lib/modules/*/build
+rm -f %{buildroot}/lib/modules/*/source
+
 %post
 # Triggers kernel-install to create the initramfs and update bootloader entries
-# usage: kernel-install add <kernel-version> <kernel-image>
+# The kernel version argument must match the directory name in /lib/modules/
 /bin/kernel-install add %{version}-chromiumos /boot/vmlinuz-%{version}-chromiumos || :
 
 %preun
@@ -86,10 +107,12 @@ make %{?_smp_mflags} WERROR=0 \
 /bin/kernel-install add %{version}-chromiumos /boot/vmlinuz-%{version}-chromiumos || :
 
 %files
+# The directory usually contains the specific kernel version, so we use a wildcard to be safe
+# or explicitly match the directory created by 'make modules_install'
 /lib/modules/*
-/boot/vmlinuz*
-/boot/System.map*
-/boot/config*
+/boot/vmlinuz-%{version}-chromiumos
+/boot/System.map-%{version}-chromiumos
+/boot/config-%{version}-chromiumos
 
 %changelog
 * Mon Dec 01 2025 User <user@example.com> - 6.6-1
