@@ -1,7 +1,8 @@
-# FIX: Disable debuginfo package generation to prevent "Empty %files file" errors
-# and save massive amounts of disk space/time.
+# Disable debuginfo packages (prevents 'strip' from running to generate them)
+%global _enable_debug_package 0
 %global debug_package %{nil}
-# Prevent rpmbuild from stripping the kernel image (which corrupts the PE/COFF header)
+
+# Disable the standard post-install script (prevents 'brp-compress' and 'brp-strip')
 %global __os_install_post %{nil}
 
 Name:       chromiumos-kernel
