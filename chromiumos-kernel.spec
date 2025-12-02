@@ -122,7 +122,7 @@ rm -f %{buildroot}/lib/modules/*/source
 
 # === CRITICAL: Save the kernel image so it doesn't get stripped/corrupted ===
 # FIX: The file path is now passed INSIDE the braces
-%{buildroot_save_unstripped lib/modules/%{version}-chromiumos/vmlinuz}
+%buildroot_save_unstripped lib/modules/%{version}-chromiumos/vmlinuz
 
 %post
 # Triggers kernel-install to create the initramfs and update bootloader entries
