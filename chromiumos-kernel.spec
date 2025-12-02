@@ -44,6 +44,9 @@ export CHROMEOS_KERNEL_FAMILY=chromeos
 # Clean up any stale configs
 make mrproper
 
+# Force the modules to be installed in /lib/modules/6.1.145-chromiumos
+./scripts/config --set-str CONFIG_LOCALVERSION "-chromiumos"
+
 # FIX 2: Use the specific flavor found in your screenshot
 # 'chromiumos-x86_64-generic' corresponds to chromiumos-x86_64-generic.flavour.config
 ./chromeos/scripts/prepareconfig chromiumos-x86_64-generic
