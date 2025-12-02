@@ -1,9 +1,26 @@
-# Disable debuginfo packages (prevents 'strip' from running to generate them)
+# Disable debuginfo packages (optional, but keeps build smaller)
 %global _enable_debug_package 0
 %global debug_package %{nil}
 
-# Disable the standard post-install script (prevents 'brp-compress' and 'brp-strip')
-%global __os_install_post %{nil}
+# --- START: Save/Restore Unstripped Files Macros ---
+# This allows us to protect specific files (like vmlinuz) from being stripped
+# while allowing the rest of the build process to run normally.
+%define buildroot_unstripped %{_builddir}/root_unstripped
+
+# Macro to save a specific file/dir to a safe location
+%define buildroot_save_unstripped() \
+(cd %{buildroot}; cp -rav --parents -t %{buildroot_unstripped}/ %1 || true) \
+%{nil}
+
+# Macro to restore the saved files after stripping is done
+%define __restore_unstripped_root_post \
+    echo "Restoring unstripped artefacts %{buildroot_unstripped} -> %{buildroot}" \
+    cp -rav %{buildroot_unstripped}/. %{buildroot}/ \
+%{nil}
+
+# Hook the restore action into the standard RPM install post-process
+%global __spec_install_post %{__spec_install_post} %{__restore_unstripped_root_post}
+# --- END: Save/Restore Macros ---
 
 Name:       chromiumos-kernel
 Version:    6.1.145
@@ -100,6 +117,10 @@ install -D -m 644 .config %{buildroot}/lib/modules/%{version}-chromiumos/config
 # Cleanup: Remove 'build' and 'source' symlinks that point to the build environment
 rm -f %{buildroot}/lib/modules/*/build
 rm -f %{buildroot}/lib/modules/*/source
+
+# === CRITICAL: Save the kernel image so it doesn't get stripped/corrupted ===
+# This works with the macros defined at the top of the file
+%{buildroot_save_unstripped} lib/modules/%{version}-chromiumos/vmlinuz
 
 %post
 # Triggers kernel-install to create the initramfs and update bootloader entries
