@@ -8,8 +8,10 @@
 %define buildroot_unstripped %{_builddir}/root_unstripped
 
 # Macro to save a specific file/dir to a safe location
+# FIX: Added mkdir -p to ensure the target directory exists
 %define buildroot_save_unstripped() \
-(cd %{buildroot}; cp -rav --parents -t %{buildroot_unstripped}/ %1 || true) \
+mkdir -p %{buildroot_unstripped} \
+(cd %{buildroot}; cp -rav --parents -t %{buildroot_unstripped}/ %{1} || true) \
 %{nil}
 
 # Macro to restore the saved files after stripping is done
@@ -119,8 +121,8 @@ rm -f %{buildroot}/lib/modules/*/build
 rm -f %{buildroot}/lib/modules/*/source
 
 # === CRITICAL: Save the kernel image so it doesn't get stripped/corrupted ===
-# This works with the macros defined at the top of the file
-%{buildroot_save_unstripped} lib/modules/%{version}-chromiumos/vmlinuz
+# FIX: The file path is now passed INSIDE the braces
+%{buildroot_save_unstripped lib/modules/%{version}-chromiumos/vmlinuz}
 
 %post
 # Triggers kernel-install to create the initramfs and update bootloader entries
