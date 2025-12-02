@@ -62,6 +62,7 @@ sed -i 's/^HOSTCFLAGS\s*:=/HOSTCFLAGS\t:= -std=gnu11 /' Makefile
 sed -i 's/^REALMODE_CFLAGS\s*:=/REALMODE_CFLAGS\t:= -std=gnu11 /' arch/x86/Makefile
 
 # Ensure the config is updated for the current kernel version without user prompts
+./scripts/config --set-str CONFIG_LOCALVERSION "-chromiumos"
 make olddefconfig
 
 # Compile the kernel image and modules
