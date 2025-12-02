@@ -86,22 +86,10 @@ make %{?_smp_mflags} WERROR=0 \
 /bin/kernel-install add %{version}-chromiumos /boot/vmlinuz-%{version}-chromiumos || :
 
 %files
-# The kernel modules directory
-# We use a wildcard for the version to capture the directory created by 'make modules_install'
-# /lib/modules/6.1.145-chromiumos/
 /lib/modules/*
-
-# The Kernel Image
-# Matches: cp arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{version}-chromiumos
-/boot/vmlinuz-%{version}-chromiumos
-
-# System Map (Symbol table, useful for debugging/depmod)
-# Matches: cp System.map %{buildroot}/boot/System.map-%{version}-chromiumos
-/boot/System.map-%{version}-chromiumos
-
-# Kernel Configuration
-# Matches: cp .config %{buildroot}/boot/config-%{version}-chromiumos
-/boot/config-%{version}-chromiumos
+/boot/vmlinuz*
+/boot/System.map*
+/boot/config*
 
 %changelog
 * Mon Dec 01 2025 User <user@example.com> - 6.6-1
