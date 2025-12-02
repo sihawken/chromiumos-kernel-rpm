@@ -93,11 +93,6 @@ install -D -m 644 .config %{buildroot}/boot/config-%{version}-chromiumos
 rm -f %{buildroot}/lib/modules/*/build
 rm -f %{buildroot}/lib/modules/*/source
 
-# (Optional) Rename modules directory if it doesn't match the desired version string
-if [ -d %{buildroot}/lib/modules/%{version} ]; then
-    mv %{buildroot}/lib/modules/%{version} %{buildroot}/lib/modules/%{version}-chromiumos
-fi
-
 %post
 # Triggers kernel-install to create the initramfs and update bootloader entries
 # The kernel version argument must match the directory name in /lib/modules/
