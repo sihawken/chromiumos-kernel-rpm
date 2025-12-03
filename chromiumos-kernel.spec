@@ -1,7 +1,5 @@
-%global __os_install_post %{nil}
-
 # ----------------------------------------------------------------------
-# COPY FROM KERNEL.SPEC: Build Flags & Macros
+# COPY FROM KERNEL.SPEC: Build Flags & Save/Restore Macros
 # ----------------------------------------------------------------------
 
 # Disable LTO and frame pointers to prevent boot stub corruption
@@ -9,26 +7,32 @@
 %undefine _include_frame_pointers
 %global _lto_cflags %{nil}
 
-# Macros to save unstripped binaries (Fixes "DOS magic invalid")
+# Define the location to save unstripped binaries
 %define buildroot_unstripped %{_builddir}/root_unstripped
+
+# Macro to save a file from buildroot to the unstripped directory
 %define buildroot_save_unstripped() \
 (cd %{buildroot}; cp -rav --parents -t %{buildroot_unstripped}/ %1 || true) \
 %{nil}
 
+# Macro to restore the unstripped files back to buildroot
 %define __restore_unstripped_root_post \
     echo "Restoring unstripped artefacts %{buildroot_unstripped} -> %{buildroot}" \
     cp -rav %{buildroot_unstripped}/. %{buildroot}/ \
 %{nil}
 
-# Override install post to restore unstripped kernel after brp-strip runs
+# Override the standard install_post script.
+# CRITICAL: We run the standard __os_install_post (which strips files) 
+# and THEN run our restore script to overwrite the stripped kernel with the original.
 %define __spec_install_post \
-  %{__arch_install_post}\
-  %{__os_install_post}\
-  %{__restore_unstripped_root_post}
+    %{?__debug_package:%{__debug_install_post}}\
+    %{__arch_install_post}\
+    %{__os_install_post}\
+    %{__restore_unstripped_root_post}
 
 # ----------------------------------------------------------------------
 
-# Disable debuginfo packages
+# Disable debuginfo packages (we are handling stripping manually via save/restore)
 %global _enable_debug_package 0
 %global debug_package %{nil}
 
@@ -115,14 +119,13 @@ chmod 644 %{buildroot}/lib/modules/%{version}-chromiumos/symvers.xz
 rm -f %{buildroot}/lib/modules/*/build
 rm -f %{buildroot}/lib/modules/*/source
 
-# [cite_start]FIX: Create the unstripped directory explicitly [cite: 8]
+# SAVE UNSTRIPPED KERNEL
+# 1. Create the storage directory (fixes "cp: cannot stat" error)
 mkdir -p %{buildroot_unstripped}
-
-# SAVE UNSTRIPPED KERNEL: Save vmlinuz before RPM strips it
+# 2. Save the vmlinuz file. This copy will be used to restore the file after RPM strips the original.
 %buildroot_save_unstripped "lib/modules/%{version}-chromiumos/vmlinuz"
 
 %post
-# Use standard 'vmlinuz' name in the call
 /bin/kernel-install add %{version}-chromiumos /lib/modules/%{version}-chromiumos/vmlinuz || :
 
 %preun
