@@ -17,7 +17,8 @@ mkdir -p %{buildroot_unstripped} \
 # Macro to restore the saved files after stripping is done
 %define __restore_unstripped_root_post \
     echo "Restoring unstripped artefacts %{buildroot_unstripped} -> %{buildroot}" \
-    cp -rav %{buildroot_unstripped}/. %{buildroot}/ \
+    cp -rav %{buildroot_unstripped}/. \
+%{buildroot}/ \
 %{nil}
 
 # Hook the restore action into the standard RPM install post-process
@@ -109,25 +110,26 @@ mkdir -p %{buildroot}/lib/modules
 # DEPMOD=/bin/true prevents depmod from running during the build (it runs on the target system instead)
 make modules_install INSTALL_MOD_PATH=%{buildroot} DEPMOD=/bin/true
 
-# Install the kernel image to /lib/modules/<version>/vmlinuz (Required for OSTree)
-install -D -m 755 arch/x86/boot/bzImage %{buildroot}/lib/modules/%{version}-chromiumos/vmlinuz
+# Install the kernel image with the version suffix (Required for standard Fedora structure)
+install -D -m 755 arch/x86/boot/bzImage %{buildroot}/lib/modules/%{version}-chromiumos/vmlinuz-%{version}-chromiumos
 
-# Install System.map and config to the same directory
-install -D -m 644 System.map %{buildroot}/lib/modules/%{version}-chromiumos/System.map
-install -D -m 644 .config %{buildroot}/lib/modules/%{version}-chromiumos/config
+# Install System.map and config with the version suffix
+install -D -m 644 System.map %{buildroot}/lib/modules/%{version}-chromiumos/System.map-%{version}-chromiumos
+install -D -m 644 .config %{buildroot}/lib/modules/%{version}-chromiumos/config-%{version}-chromiumos
 
 # Cleanup: Remove 'build' and 'source' symlinks that point to the build environment
 rm -f %{buildroot}/lib/modules/*/build
 rm -f %{buildroot}/lib/modules/*/source
 
 # === CRITICAL: Save the kernel image so it doesn't get stripped/corrupted ===
-# FIX: The file path is now passed INSIDE the braces
-%buildroot_save_unstripped lib/modules/%{version}-chromiumos/vmlinuz
+# FIX: The file path is now passed INSIDE the braces and matches the new versioned filename
+%buildroot_save_unstripped lib/modules/%{version}-chromiumos/vmlinuz-%{version}-chromiumos
 
 %post
 # Triggers kernel-install to create the initramfs and update bootloader entries
 # The kernel version argument must match the directory name in /lib/modules/
-/bin/kernel-install add %{version}-chromiumos /lib/modules/%{version}-chromiumos/vmlinuz|| :
+# UPDATED: Points to the versioned vmlinuz filename
+/bin/kernel-install add %{version}-chromiumos /lib/modules/%{version}-chromiumos/vmlinuz-%{version}-chromiumos || :
 
 %preun
 # Removes the kernel from bootloader entries and deletes initramfs upon uninstallation
@@ -135,10 +137,11 @@ rm -f %{buildroot}/lib/modules/*/source
 
 %posttrans
 # Ensures everything is clean after the transaction
-/bin/kernel-install add %{version}-chromiumos /lib/modules/%{version}-chromiumos/vmlinuz || :
+# UPDATED: Points to the versioned vmlinuz filename
+/bin/kernel-install add %{version}-chromiumos /lib/modules/%{version}-chromiumos/vmlinuz-%{version}-chromiumos || :
 
 %files
-# This wildcard now covers the vmlinuz, config, and System.map inside the directory
+# This wildcard now covers the versioned vmlinuz, config, and System.map inside the directory
 /lib/modules/%{version}-chromiumos/
 
 %changelog
