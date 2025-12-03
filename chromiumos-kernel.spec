@@ -115,8 +115,10 @@ chmod 644 %{buildroot}/lib/modules/%{version}-chromiumos/symvers.xz
 rm -f %{buildroot}/lib/modules/*/build
 rm -f %{buildroot}/lib/modules/*/source
 
-# SAVE UNSTRIPPED KERNEL: This is the critical fix.
-# We must save vmlinuz before RPM strips it, so we can restore it later.
+# [cite_start]FIX: Create the unstripped directory explicitly [cite: 8]
+mkdir -p %{buildroot_unstripped}
+
+# SAVE UNSTRIPPED KERNEL: Save vmlinuz before RPM strips it
 %buildroot_save_unstripped "lib/modules/%{version}-chromiumos/vmlinuz"
 
 %post
