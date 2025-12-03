@@ -14,7 +14,6 @@ mkdir -p %{buildroot_unstripped} \
 %{nil}
 
 # Macro to restore the saved files after stripping is done
-# FIX: 'cp' command is now on a single line to prevent "missing destination" errors
 %define __restore_unstripped_root_post \
     echo "Restoring unstripped artefacts %{buildroot_unstripped} -> %{buildroot}" \
     cp -rav %{buildroot_unstripped}/. %{buildroot}/ \
@@ -53,6 +52,8 @@ BuildRequires:  python3
 BuildRequires:  /usr/bin/lzma
 # FIX: Added kmod because 'make modules_install' requires depmod
 BuildRequires:  kmod
+# FIX: Added xz to compress symvers
+BuildRequires:  xz
 
 %description
 This is the Linux kernel built from the Chromium OS source tree.
@@ -116,6 +117,10 @@ install -D -m 755 arch/x86/boot/bzImage %{buildroot}/lib/modules/%{version}-chro
 install -D -m 644 System.map %{buildroot}/lib/modules/%{version}-chromiumos/System.map-%{version}-chromiumos
 install -D -m 644 .config %{buildroot}/lib/modules/%{version}-chromiumos/config-%{version}-chromiumos
 
+# NEW: Compress and install Module.symvers
+xz -c Module.symvers > %{buildroot}/lib/modules/%{version}-chromiumos/symvers.xz
+chmod 644 %{buildroot}/lib/modules/%{version}-chromiumos/symvers.xz
+
 # Cleanup: Remove 'build' and 'source' symlinks that point to the build environment
 rm -f %{buildroot}/lib/modules/*/build
 rm -f %{buildroot}/lib/modules/*/source
@@ -140,7 +145,7 @@ rm -f %{buildroot}/lib/modules/*/source
 /bin/kernel-install add %{version}-chromiumos /lib/modules/%{version}-chromiumos/vmlinuz-%{version}-chromiumos || :
 
 %files
-# This wildcard now covers the versioned vmlinuz, config, and System.map inside the directory
+# This wildcard now covers the versioned vmlinuz, config, System.map, and symvers.xz
 /lib/modules/%{version}-chromiumos/
 
 %changelog
