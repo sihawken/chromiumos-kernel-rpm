@@ -8,17 +8,16 @@
 %define buildroot_unstripped %{_builddir}/root_unstripped
 
 # Macro to save a specific file/dir to a safe location
-# FIX: Added mkdir -p to ensure the target directory exists
 %define buildroot_save_unstripped() \
 mkdir -p %{buildroot_unstripped} \
 (cd %{buildroot}; cp -rav --parents -t %{buildroot_unstripped}/ %{1} || true) \
 %{nil}
 
 # Macro to restore the saved files after stripping is done
+# FIX: 'cp' command is now on a single line to prevent "missing destination" errors
 %define __restore_unstripped_root_post \
     echo "Restoring unstripped artefacts %{buildroot_unstripped} -> %{buildroot}" \
-    cp -rav %{buildroot_unstripped}/. \
-%{buildroot}/ \
+    cp -rav %{buildroot_unstripped}/. %{buildroot}/ \
 %{nil}
 
 # Hook the restore action into the standard RPM install post-process
