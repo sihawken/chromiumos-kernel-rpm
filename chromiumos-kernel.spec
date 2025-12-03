@@ -1,27 +1,11 @@
+# === FIX: Disable automatic stripping ===
+# This is CRITICAL. Without this, rpmbuild runs 'brp-strip' which destroys
+# the kernel image (vmlinuz) header, causing "kernel DOS magic is invalid" boot errors.
+%global __os_install_post %{nil}
+
 # Disable debuginfo packages (optional, but keeps build smaller)
 %global _enable_debug_package 0
 %global debug_package %{nil}
-
-# --- START: Save/Restore Unstripped Files Macros ---
-# This allows us to protect specific files (like vmlinuz) from being stripped
-# while allowing the rest of the build process to run normally.
-%define buildroot_unstripped %{_builddir}/root_unstripped
-
-# Macro to save a specific file/dir to a safe location
-%define buildroot_save_unstripped() \
-mkdir -p %{buildroot_unstripped} \
-(cd %{buildroot}; cp -rav --parents -t %{buildroot_unstripped}/ %{1} || true) \
-%{nil}
-
-# Macro to restore the saved files after stripping is done
-%define __restore_unstripped_root_post \
-    echo "Restoring unstripped artefacts %{buildroot_unstripped} -> %{buildroot}" \
-    cp -rav %{buildroot_unstripped}/. %{buildroot}/ \
-%{nil}
-
-# Hook the restore action into the standard RPM install post-process
-%global __spec_install_post %{__spec_install_post} %{__restore_unstripped_root_post}
-# --- END: Save/Restore Macros ---
 
 Name:       chromiumos-kernel
 Version:    6.1.145
@@ -118,6 +102,7 @@ install -D -m 644 System.map %{buildroot}/lib/modules/%{version}-chromiumos/Syst
 install -D -m 644 .config %{buildroot}/lib/modules/%{version}-chromiumos/config-%{version}-chromiumos
 
 # NEW: Compress and install Module.symvers
+# This is required for building external modules (DKMS) later
 xz -c Module.symvers > %{buildroot}/lib/modules/%{version}-chromiumos/symvers.xz
 chmod 644 %{buildroot}/lib/modules/%{version}-chromiumos/symvers.xz
 
@@ -125,14 +110,12 @@ chmod 644 %{buildroot}/lib/modules/%{version}-chromiumos/symvers.xz
 rm -f %{buildroot}/lib/modules/*/build
 rm -f %{buildroot}/lib/modules/*/source
 
-# === CRITICAL: Save the kernel image so it doesn't get stripped/corrupted ===
-# FIX: The file path is now passed INSIDE the braces and matches the new versioned filename
-%buildroot_save_unstripped lib/modules/%{version}-chromiumos/vmlinuz-%{version}-chromiumos
+# Note: We removed the "Save/Restore Unstripped" macros because disabling
+# __os_install_post at the top of the file handles this more reliably.
 
 %post
 # Triggers kernel-install to create the initramfs and update bootloader entries
 # The kernel version argument must match the directory name in /lib/modules/
-# UPDATED: Points to the versioned vmlinuz filename
 /bin/kernel-install add %{version}-chromiumos /lib/modules/%{version}-chromiumos/vmlinuz-%{version}-chromiumos || :
 
 %preun
@@ -141,11 +124,10 @@ rm -f %{buildroot}/lib/modules/*/source
 
 %posttrans
 # Ensures everything is clean after the transaction
-# UPDATED: Points to the versioned vmlinuz filename
 /bin/kernel-install add %{version}-chromiumos /lib/modules/%{version}-chromiumos/vmlinuz-%{version}-chromiumos || :
 
 %files
-# This wildcard now covers the versioned vmlinuz, config, System.map, and symvers.xz
+# This wildcard covers vmlinuz, config, System.map, symvers.xz, and the 'kernel' directory
 /lib/modules/%{version}-chromiumos/
 
 %changelog
