@@ -1,6 +1,3 @@
-# === FIX: Disable automatic stripping ===
-# This is CRITICAL. Without this, rpmbuild runs 'brp-strip' which destroys
-# the kernel image (vmlinuz) header, causing "kernel DOS magic is invalid" boot errors.
 %global __os_install_post %{nil}
 
 # Disable debuginfo packages (optional, but keeps build smaller)
