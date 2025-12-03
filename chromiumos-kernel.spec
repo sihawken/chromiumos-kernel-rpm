@@ -1,25 +1,32 @@
 %global __os_install_post %{nil}
 
-# COPY FROM KERNEL.SPEC: Disable LTO and frame pointers to prevent boot stub corruption
+# ----------------------------------------------------------------------
+# COPY FROM KERNEL.SPEC: Build Flags & Macros
+# ----------------------------------------------------------------------
+
+# Disable LTO and frame pointers to prevent boot stub corruption
 %define _with_baseonly 1
 %undefine _include_frame_pointers
 %global _lto_cflags %{nil}
 
-# COPY FROM KERNEL.SPEC: Macros to save unstripped binaries (prevents "DOS magic invalid")
+# Macros to save unstripped binaries (Fixes "DOS magic invalid")
 %define buildroot_unstripped %{_builddir}/root_unstripped
 %define buildroot_save_unstripped() \
 (cd %{buildroot}; cp -rav --parents -t %{buildroot_unstripped}/ %1 || true) \
 %{nil}
+
 %define __restore_unstripped_root_post \
     echo "Restoring unstripped artefacts %{buildroot_unstripped} -> %{buildroot}" \
     cp -rav %{buildroot_unstripped}/. %{buildroot}/ \
 %{nil}
 
-# COPY FROM KERNEL.SPEC: Override install post to restore unstripped kernel
+# Override install post to restore unstripped kernel after brp-strip runs
 %define __spec_install_post \
   %{__arch_install_post}\
   %{__os_install_post}\
   %{__restore_unstripped_root_post}
+
+# ----------------------------------------------------------------------
 
 # Disable debuginfo packages
 %global _enable_debug_package 0
@@ -108,7 +115,8 @@ chmod 644 %{buildroot}/lib/modules/%{version}-chromiumos/symvers.xz
 rm -f %{buildroot}/lib/modules/*/build
 rm -f %{buildroot}/lib/modules/*/source
 
-# SAVE UNSTRIPPED KERNEL: Explicitly save vmlinuz to prevent stripping corruption
+# SAVE UNSTRIPPED KERNEL: This is the critical fix.
+# We must save vmlinuz before RPM strips it, so we can restore it later.
 %buildroot_save_unstripped "lib/modules/%{version}-chromiumos/vmlinuz"
 
 %post
