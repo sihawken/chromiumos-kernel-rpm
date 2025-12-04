@@ -92,16 +92,8 @@ make mrproper
 ./scripts/config --enable CONFIG_RD_ZSTD
 
 # Fix Makefiles for C11 standard
-sed -i 's/^HOSTCFLAGS\s*:=/HOSTCFLAGS\t:= -std=gnu11 /' Makefile
-sed -i 's/^REALMODE_CFLAGS\s*:=/REALMODE_CFLAGS\t:= -std=gnu11 /' arch/x86/Makefile
-
-# --- DEBUGGING LINES ---
-echo "=== DEBUG: Checking Makefile modification ==="
-echo "HOSTCFLAGS is now:"
-grep "^HOSTCFLAGS" Makefile
-echo "REALMODE_CFLAGS is now:"
-grep "^REALMODE_CFLAGS" arch/x86/Makefile
-echo "============================================="
+# echo "KBUILD_CFLAGS += -std=gnu11" >> Makefile
+echo "REALMODE_CFLAGS" += -std=gnu11" >> arch/x86/Makefile
 
 ./scripts/config --set-str CONFIG_LOCALVERSION "-chromiumos"
 make olddefconfig
