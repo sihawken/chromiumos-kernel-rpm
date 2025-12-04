@@ -92,8 +92,8 @@ make mrproper
 ./scripts/config --enable CONFIG_RD_ZSTD
 
 # Fix Makefiles for C11 standard
-sed -i '/^HOSTCFLAGS\s*:=/ s/$/ -std=gnu11/' Makefile
-sed -i '/^REALMODE_CFLAGS\s*:=/ s/$/ -std=gnu11/' arch/x86/Makefile
+sed -i 's/^HOSTCFLAGS\s*:=/HOSTCFLAGS\t:= -std=gnu11 /' Makefile
+sed -i 's/^REALMODE_CFLAGS\s*:=/REALMODE_CFLAGS\t:= -std=gnu11 /' arch/x86/Makefile
 
 # # --- DEBUGGING LINES ---
 # echo "=== DEBUG: Checking Makefile modification ==="
