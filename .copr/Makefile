@@ -1,42 +1,55 @@
 .PHONY: srpm
 
-# Variables
-# We need to know which Fedora branch to clone for the config files
+# 1. Define the Fedora release for config files (e.g., f41, f43, rawhide)
 FEDORA_RELEASE=f43
 
 srpm:
-	# 1. Install Build Dependencies
-	dnf install -y fedpkg fedora-packager rpmdevtools git tar
+	# --- Install Dependencies ---
+	dnf install -y fedpkg fedora-packager rpmdevtools git tar sed
 
-	# 2. Prepare Build Directory with Fedora Assets
-	# We clone the official Fedora kernel repo to get the hundreds of config files
-	# and scripts (e.g., generate_all_configs.sh) that the spec depends on.
+	# --- Fetch Chromium Source ---
+	# Clone into a temporary folder
+	git clone --depth 1 https://chromium.googlesource.com/chromiumos/third_party/kernel linux-chromium
+
+	# --- Detect Version from Source ---
+	# Extract version components from the Chromium Makefile (e.g., 6, 12, 5)
+	$(eval K_MAJOR := $(shell grep -m1 "^VERSION =" linux-chromium/Makefile | cut -d= -f2 | tr -d ' '))
+	$(eval K_PATCH := $(shell grep -m1 "^PATCHLEVEL =" linux-chromium/Makefile | cut -d= -f2 | tr -d ' '))
+	$(eval K_SUB   := $(shell grep -m1 "^SUBLEVEL =" linux-chromium/Makefile | cut -d= -f2 | tr -d ' '))
+	$(eval K_VER   := $(K_MAJOR).$(K_PATCH).$(K_SUB))
+
+	@echo "------------------------------------------------"
+	@echo "Detected Chromium Kernel Version: $(K_VER)"
+	@echo "------------------------------------------------"
+
+	# --- Prepare Build Environment ---
+	# Clone Fedora kernel repo to get the aux files (generate_all_configs.sh, etc)
 	git clone https://src.fedoraproject.org/rpms/kernel.git build-env
 	cd build-env && git checkout $(FEDORA_RELEASE)
 
-	# 3. Install YOUR Spec File
-	# Overwrite the Fedora spec with the one from this repo
+	# --- Update Spec File ---
+	# Copy YOUR uploaded spec file into the build environment
 	cp kernel.spec build-env/
 
-	# 4. Clone Chromium OS Kernel Source
-	# We clone into a temporary directory
-	git clone --depth 1 https://chromium.googlesource.com/chromiumos/third_party/kernel linux-chromium
+	# Dynamically update the version macros in the spec file to match the source
+	# We strictly replace the existing %define lines
+	sed -i 's/%define specrpmversion .*/%define specrpmversion $(K_VER)/' build-env/kernel.spec
+	sed -i 's/%define specversion .*/%define specversion $(K_VER)/' build-env/kernel.spec
+	sed -i 's/%define patchversion .*/%define patchversion $(K_MAJOR).$(K_PATCH)/' build-env/kernel.spec
+	sed -i 's/%define kversion .*/%define kversion $(K_MAJOR)/' build-env/kernel.spec
+	sed -i 's/%define tarfile_release .*/%define tarfile_release $(K_VER)/' build-env/kernel.spec
+	sed -i 's/%define patchlevel .*/%define patchlevel $(K_PATCH)/' build-env/kernel.spec
 
-	# 5. Determine Expected Tarball Name from Your Spec
-	# We read the 'tarfile_release' definition from your spec (e.g., 6.17.10)
-	# This ensures the tarball we create matches exactly what Source0 expects.
-	$(eval KVER := $(shell grep "%define tarfile_release" kernel.spec | head -n1 | awk '{print $$3}'))
-	
-	@echo "Spec file expects version: $(KVER)"
-	@echo "Creating tarball: linux-$(KVER).tar.xz"
+	# Ensure the Source0 tag points to the tarball we are about to create
+	sed -i 's|^Source0:.*|Source0: linux-$(K_VER).tar.xz|' build-env/kernel.spec
 
-	# 6. Create the Source Tarball
-	# The spec expects the tarball to unpack into a directory named 'linux-6.17.10'
-	# We use --transform to rename the top-level directory inside the tarball
-	tar --exclude-vcs --transform 's,^linux-chromium,linux-$(KVER),' -cJf build-env/linux-$(KVER).tar.xz linux-chromium
+	# --- Create Source Tarball ---
+	# The spec expects the tarball to unpack into a directory named 'linux-X.Y.Z'
+	# We use --transform to rename the top-level directory inside the archive
+	tar --exclude-vcs --transform 's,^linux-chromium,linux-$(K_VER),' -cJf build-env/linux-$(K_VER).tar.xz linux-chromium
 
-	# 7. Build the SRPM
-	# We run rpmbuild inside the build-env directory where specs and sources now live
+	# --- Build SRPM ---
+	# We define 'buildid' here to append a custom tag (e.g., kernel-6.12.5-300.chromium.fc41)
 	cd build-env && rpmbuild \
 		--define "_sourcedir $(PWD)/build-env" \
 		--define "_specdir $(PWD)/build-env" \
@@ -44,6 +57,5 @@ srpm:
 		--define "buildid .chromium" \
 		-bs kernel.spec
 
-	# 8. Cleanup
-	# COPR expects the SRPM in the root of the repo
+	# --- Output ---
 	mv *.src.rpm .
