@@ -93,7 +93,7 @@ make mrproper
 
 # Fix Makefiles for C11 standard
 echo "HOSTCFLAGS += -std=gnu11" >> Makefile
-echo "REALMODE_CFLAGS" += -std=gnu11" >> arch/x86/Makefile
+echo "REALMODE_CFLAGS += -std=gnu11" >> arch/x86/Makefile
 
 ./scripts/config --set-str CONFIG_LOCALVERSION "-chromiumos"
 make olddefconfig
