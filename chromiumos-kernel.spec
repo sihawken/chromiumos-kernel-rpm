@@ -91,9 +91,9 @@ make mrproper
 # Optional: Fix the "does not support zstd" warning
 ./scripts/config --enable CONFIG_RD_ZSTD
 
-# Fix Makefiles for C11 standard
-sed -i 's/^HOSTCFLAGS\s*:=/HOSTCFLAGS\t:= -std=gnu11 /' Makefile
-sed -i 's/^REALMODE_CFLAGS\s*:=/REALMODE_CFLAGS\t:= -std=gnu11 /' arch/x86/Makefile
+# # Fix Makefiles for C11 standard
+# sed -i 's/^HOSTCFLAGS\s*:=/HOSTCFLAGS\t:= -std=gnu11 /' Makefile
+# sed -i 's/^REALMODE_CFLAGS\s*:=/REALMODE_CFLAGS\t:= -std=gnu11 /' arch/x86/Makefile
 
 ./scripts/config --set-str CONFIG_LOCALVERSION "-chromiumos"
 make olddefconfig
