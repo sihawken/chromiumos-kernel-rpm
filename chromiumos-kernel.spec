@@ -84,25 +84,30 @@ make mrproper
 # Disable Werror
 ./scripts/config --disable CONFIG_WERROR
 
-# Enable the EFI Boot Stub (Required for GRUB/UEFI booting)
+# ----------------------------------------------------------------------
+# FIX 1: Enable UEFI Support (Required for GRUB & Booting)
+# ----------------------------------------------------------------------
 ./scripts/config --enable CONFIG_EFI
 ./scripts/config --enable CONFIG_EFI_STUB
+./scripts/config --enable CONFIG_EFIVAR_FS
+./scripts/config --enable CONFIG_RD_ZSTD
 
-# Enable the Text Console (VT) so you see text instead of blackness
+# ----------------------------------------------------------------------
+# FIX 2: Enable Graphics & Console (Fixes "Black Screen")
+# ChromiumOS defaults disable these, so we must force them on.
+# ----------------------------------------------------------------------
+# 1. Enable the Text Console (VT) so you see text instead of blackness
 ./scripts/config --enable CONFIG_VT
 ./scripts/config --enable CONFIG_VGA_CONSOLE
 ./scripts/config --enable CONFIG_FRAMEBUFFER_CONSOLE
 
-# Enable UEFI/Generic Framebuffers (Required for 6.1+ on PC)
+# 2. Enable UEFI/Generic Framebuffers (Required for 6.1+ on PC)
 ./scripts/config --enable CONFIG_FB_EFI
 ./scripts/config --enable CONFIG_DRM_SIMPLEDRM
 ./scripts/config --enable CONFIG_SYSFB_SIMPLEFB
 
-# Ensure DRM (Direct Rendering) is built-in, not a module
+# 3. Ensure DRM (Direct Rendering) is built-in
 ./scripts/config --enable CONFIG_DRM
-
-# Optional: Fix the "does not support zstd" warning
-./scripts/config --enable CONFIG_RD_ZSTD
 
 # Fix Makefiles for C11 standard
 echo "HOSTCFLAGS += -std=gnu11" >> Makefile
