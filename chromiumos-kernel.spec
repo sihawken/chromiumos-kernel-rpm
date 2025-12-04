@@ -95,13 +95,13 @@ make mrproper
 sed -i 's/^HOSTCFLAGS\s*:=/HOSTCFLAGS\t:= -std=gnu11 /' Makefile
 sed -i 's/^REALMODE_CFLAGS\s*:=/REALMODE_CFLAGS\t:= -std=gnu11 /' arch/x86/Makefile
 
-# # --- DEBUGGING LINES ---
-# echo "=== DEBUG: Checking Makefile modification ==="
-# echo "HOSTCFLAGS is now:"
-# grep "^HOSTCFLAGS" Makefile
-# echo "REALMODE_CFLAGS is now:"
-# grep "^REALMODE_CFLAGS" arch/x86/Makefile
-# echo "============================================="
+# --- DEBUGGING LINES ---
+echo "=== DEBUG: Checking Makefile modification ==="
+echo "HOSTCFLAGS is now:"
+grep "^HOSTCFLAGS" Makefile
+echo "REALMODE_CFLAGS is now:"
+grep "^REALMODE_CFLAGS" arch/x86/Makefile
+echo "============================================="
 
 ./scripts/config --set-str CONFIG_LOCALVERSION "-chromiumos"
 make olddefconfig
