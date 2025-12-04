@@ -88,6 +88,19 @@ make mrproper
 ./scripts/config --enable CONFIG_EFI
 ./scripts/config --enable CONFIG_EFI_STUB
 
+# Enable the Text Console (VT) so you see text instead of blackness
+./scripts/config --enable CONFIG_VT
+./scripts/config --enable CONFIG_VGA_CONSOLE
+./scripts/config --enable CONFIG_FRAMEBUFFER_CONSOLE
+
+# Enable UEFI/Generic Framebuffers (Required for 6.1+ on PC)
+./scripts/config --enable CONFIG_FB_EFI
+./scripts/config --enable CONFIG_DRM_SIMPLEDRM
+./scripts/config --enable CONFIG_SYSFB_SIMPLEFB
+
+# Ensure DRM (Direct Rendering) is built-in, not a module
+./scripts/config --enable CONFIG_DRM
+
 # Optional: Fix the "does not support zstd" warning
 ./scripts/config --enable CONFIG_RD_ZSTD
 
