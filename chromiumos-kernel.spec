@@ -82,7 +82,14 @@ make mrproper
 ./chromeos/scripts/prepareconfig chromiumos-x86_64-generic
 
 # Disable Werror
-./scripts/config --disable CONFIG_WERROR --enable CONFIG_EFI_STUB
+./scripts/config --disable CONFIG_WERROR
+
+# Enable the EFI Boot Stub (Required for GRUB/UEFI booting)
+./scripts/config --enable CONFIG_EFI
+./scripts/config --enable CONFIG_EFI_STUB
+
+# Optional: Fix the "does not support zstd" warning
+./scripts/config --enable CONFIG_RD_ZSTD
 
 # Fix Makefiles for C11 standard
 sed -i 's/^HOSTCFLAGS\s*:=/HOSTCFLAGS\t:= -std=gnu11 /' Makefile
