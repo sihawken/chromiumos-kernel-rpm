@@ -82,7 +82,7 @@ make mrproper
 ./chromeos/scripts/prepareconfig chromiumos-x86_64-generic
 
 # Disable Werror
-./scripts/config --disable CONFIG_WERROR
+./scripts/config --disable CONFIG_WERROR --enable CONFIG_EFI_STUB
 
 # Fix Makefiles for C11 standard
 sed -i 's/^HOSTCFLAGS\s*:=/HOSTCFLAGS\t:= -std=gnu11 /' Makefile
