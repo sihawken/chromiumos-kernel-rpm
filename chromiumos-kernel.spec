@@ -98,6 +98,7 @@ make mrproper
 # Filesystem
 ./scripts/config --enable CONFIG_BTRFS_FS
 ./scripts/config --enable CONFIG_XFS_FS
+./scripts/config --enable CONFIG_EXT4_FS
 
 # Compatibility
 ./scripts/config --disable CONFIG_MODULE_SIG_FORCE
@@ -123,23 +124,42 @@ make mrproper
 
 ./scripts/config --enable CONFIG_BLK_DEV_INITRD
 
-# [FIX] Enable Generic PC Storage Drivers
-# Enable NVMe Support
-./scripts/config --enable CONFIG_NVME_CORE
-./scripts/config --enable CONFIG_BLK_DEV_NVME
+# Core NVMe Support (Modules)
+./scripts/config --module CONFIG_NVME_KEYRING
+./scripts/config --module CONFIG_NVME_AUTH
+./scripts/config --module CONFIG_NVME_CORE
+./scripts/config --module CONFIG_BLK_DEV_NVME
 
-# Enable SATA/AHCI Support (Standard SSDs/HDDs)
-./scripts/config --enable CONFIG_ATA
-./scripts/config --enable CONFIG_SATA_AHCI
-./scripts/config --enable CONFIG_SATA_AHCI_PLATFORM
+# NVMe Features (Built-in)
+./scripts/config --enable CONFIG_NVME_MULTIPATH
+./scripts/config --enable CONFIG_NVME_HWMON
 
-# Enable SCSI/SD Support (Required for SATA)
-./scripts/config --enable CONFIG_SCSI
-./scripts/config --enable CONFIG_BLK_DEV_SD
+# NVMe Fabrics (Modules)
+./scripts/config --module CONFIG_NVME_FABRICS
+./scripts/config --module CONFIG_NVME_RDMA
+./scripts/config --module CONFIG_NVME_FC
+./scripts/config --module CONFIG_NVME_TCP
 
-# Ensure Filesystem Support is built-in (not module) for boot
-./scripts/config --enable CONFIG_EXT4_FS
-./scripts/config --enable CONFIG_BTRFS_FS
+# NVMe Security (Built-in)
+./scripts/config --enable CONFIG_NVME_TCP_TLS
+./scripts/config --enable CONFIG_NVME_HOST_AUTH
+
+# NVMe Target Support (Modules)
+./scripts/config --module CONFIG_NVME_TARGET
+
+# NVMe Target Features (Built-in)
+./scripts/config --enable CONFIG_NVME_TARGET_PASSTHRU
+
+# NVMe Target Transports (Modules)
+./scripts/config --module CONFIG_NVME_TARGET_LOOP
+./scripts/config --module CONFIG_NVME_TARGET_RDMA
+./scripts/config --module CONFIG_NVME_TARGET_FC
+./scripts/config --module CONFIG_NVME_TARGET_FCLOOP
+./scripts/config --module CONFIG_NVME_TARGET_TCP
+
+# NVMe Target Security (Built-in)
+./scripts/config --enable CONFIG_NVME_TARGET_TCP_TLS
+./scripts/config --enable CONFIG_NVME_TARGET_AUTH
 
 # Fix Makefiles for C11 standard
 echo "HOSTCFLAGS += -std=gnu11" >> Makefile
