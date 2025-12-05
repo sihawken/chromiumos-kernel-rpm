@@ -81,9 +81,9 @@ make mrproper
 # Prepare config
 ./chromeos/scripts/prepareconfig chromeos-x86_64-reven
 
-# # Disable Werror
-# ./scripts/config --disable CONFIG_WERROR
-# 
+# Disable Werror
+./scripts/config --disable CONFIG_WERROR
+
 # # ----------------------------------------------------------------------
 # # FIX 1: Enable UEFI Support (Required for GRUB & Booting)
 # # ----------------------------------------------------------------------
