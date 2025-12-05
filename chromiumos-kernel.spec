@@ -84,14 +84,19 @@ make mrproper
 # Disable Werror
 ./scripts/config --disable CONFIG_WERROR
 
-# # ----------------------------------------------------------------------
-# # FIX 1: Enable UEFI Support (Required for GRUB & Booting)
-# # ----------------------------------------------------------------------
-# ./scripts/config --enable CONFIG_EFI
-# ./scripts/config --enable CONFIG_EFI_STUB
-# ./scripts/config --enable CONFIG_EFIVAR_FS
-# ./scripts/config --enable CONFIG_RD_ZSTD
-# 
+# Leave lockdown optional
+./scripts/config --disable CONFIG_LOCK_DOWN_KERNEL_FORCE_INTEGRITY
+./scripts/config --enable CONFIG_LOCK_DOWN_KERNEL_FORCE_NONE
+
+# Enable general virtualization
+./scripts/config --enable CONFIG_KVM
+
+# Enable ztsd kernel compression
+./scripts/config --enable CONFIG_RD_ZSTD
+
+# Compatibility
+./scripts/config --disable CONFIG_MODULE_SIG_FORCE
+
 # # ----------------------------------------------------------------------
 # # FIX 2: Enable Graphics & Console (Fixes "Black Screen")
 # # ChromiumOS defaults disable these, so we must force them on.
