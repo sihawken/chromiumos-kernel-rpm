@@ -79,35 +79,35 @@ make mrproper
 ./scripts/config --set-str CONFIG_LOCALVERSION "-chromiumos"
 
 # Prepare config
-./chromeos/scripts/prepareconfig chromiumos-x86_64-generic
+./chromeos/scripts/prepareconfig chromeos-x86_64-reven
 
-# Disable Werror
-./scripts/config --disable CONFIG_WERROR
-
-# ----------------------------------------------------------------------
-# FIX 1: Enable UEFI Support (Required for GRUB & Booting)
-# ----------------------------------------------------------------------
-./scripts/config --enable CONFIG_EFI
-./scripts/config --enable CONFIG_EFI_STUB
-./scripts/config --enable CONFIG_EFIVAR_FS
-./scripts/config --enable CONFIG_RD_ZSTD
-
-# ----------------------------------------------------------------------
-# FIX 2: Enable Graphics & Console (Fixes "Black Screen")
-# ChromiumOS defaults disable these, so we must force them on.
-# ----------------------------------------------------------------------
+# # Disable Werror
+# ./scripts/config --disable CONFIG_WERROR
+# 
+# # ----------------------------------------------------------------------
+# # FIX 1: Enable UEFI Support (Required for GRUB & Booting)
+# # ----------------------------------------------------------------------
+# ./scripts/config --enable CONFIG_EFI
+# ./scripts/config --enable CONFIG_EFI_STUB
+# ./scripts/config --enable CONFIG_EFIVAR_FS
+# ./scripts/config --enable CONFIG_RD_ZSTD
+# 
+# # ----------------------------------------------------------------------
+# # FIX 2: Enable Graphics & Console (Fixes "Black Screen")
+# # ChromiumOS defaults disable these, so we must force them on.
+# # ----------------------------------------------------------------------
 # 1. Enable the Text Console (VT) so you see text instead of blackness
-./scripts/config --enable CONFIG_VT
-./scripts/config --enable CONFIG_VGA_CONSOLE
-./scripts/config --enable CONFIG_FRAMEBUFFER_CONSOLE
-
-# 2. Enable UEFI/Generic Framebuffers (Required for 6.1+ on PC)
-./scripts/config --enable CONFIG_FB_EFI
-./scripts/config --enable CONFIG_DRM_SIMPLEDRM
-./scripts/config --enable CONFIG_SYSFB_SIMPLEFB
-
-# 3. Ensure DRM (Direct Rendering) is built-in
-./scripts/config --enable CONFIG_DRM
+# ./scripts/config --enable CONFIG_VT
+# ./scripts/config --enable CONFIG_VGA_CONSOLE
+# ./scripts/config --enable CONFIG_FRAMEBUFFER_CONSOLE
+# 
+# # 2. Enable UEFI/Generic Framebuffers (Required for 6.1+ on PC)
+# ./scripts/config --enable CONFIG_FB_EFI
+# ./scripts/config --enable CONFIG_DRM_SIMPLEDRM
+# ./scripts/config --enable CONFIG_SYSFB_SIMPLEFB
+# 
+# # 3. Ensure DRM (Direct Rendering) is built-in
+# ./scripts/config --enable CONFIG_DRM
 
 # Fix Makefiles for C11 standard
 echo "HOSTCFLAGS += -std=gnu11" >> Makefile
