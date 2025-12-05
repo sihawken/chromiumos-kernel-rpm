@@ -137,7 +137,7 @@ make %{?_smp_mflags} WERROR=0 \
 mkdir -p %{buildroot}/lib/modules/%{version}-chromiumos
 
 # Install kernel modules
-make modules_install INSTALL_MOD_PATH=%{buildroot} DEPMOD=/bin/true
+make modules_install INSTALL_MOD_PATH=%{buildroot}
 
 # Install the kernel image using standard name 'vmlinuz'
 install -D -m 755 arch/x86/boot/bzImage %{buildroot}/lib/modules/%{version}-chromiumos/vmlinuz
