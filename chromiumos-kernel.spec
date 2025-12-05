@@ -119,10 +119,6 @@ make mrproper
 
 ./scripts/config --enable CONFIG_BLK_DEV_INITRD
 
-# Fix for error Module 'nvmf' will not be installed, because kernel module 'nvme_fabrics' is not available!
-./scripts/config --enable CONFIG_NVME_FABRICS
-./scripts/config --enable CONFIG_NVME_TCP
-
 # Fix Makefiles for C11 standard
 echo "HOSTCFLAGS += -std=gnu11" >> Makefile
 echo "REALMODE_CFLAGS += -std=gnu11" >> arch/x86/Makefile
