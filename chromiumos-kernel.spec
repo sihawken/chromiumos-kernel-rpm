@@ -207,18 +207,8 @@ make mrproper
 ./scripts/config --module CONFIG_ZRAM
 
 # Partition Types
-./scripts/config --enable CONFIG_AIX_PARTITION
-./scripts/config --enable CONFIG_BSD_DISKLABEL
 ./scripts/config --enable CONFIG_EFI_PARTITION
-./scripts/config --enable CONFIG_LDM_PARTITION
-./scripts/config --enable CONFIG_MAC_PARTITION
-./scripts/config --enable CONFIG_MINIX_SUBPARTITION
 ./scripts/config --enable CONFIG_MSDOS_PARTITION
-./scripts/config --enable CONFIG_OSF_PARTITION
-./scripts/config --enable CONFIG_SGI_PARTITION
-./scripts/config --enable CONFIG_SOLARIS_X86_PARTITION
-./scripts/config --enable CONFIG_SUN_PARTITION
-./scripts/config --enable CONFIG_UNIXWARE_DISKLABEL
 
 # File Systems
 ./scripts/config --enable CONFIG_BTRFS_FS
