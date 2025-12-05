@@ -372,9 +372,6 @@ make mrproper
 ./scripts/config --enable CONFIG_FANOTIFY
 ./scripts/config --enable CONFIG_FANOTIFY_ACCESS_PERMISSIONS
 
-./scripts/config --enable CONFIG_FS_VERITY
-./scripts/config --enable CONFIG_FS_VERITY_BUILTIN_SIGNATURES
-
 # Fix Makefiles for C11 standard
 echo "HOSTCFLAGS += -std=gnu11" >> Makefile
 echo "REALMODE_CFLAGS += -std=gnu11" >> arch/x86/Makefile
