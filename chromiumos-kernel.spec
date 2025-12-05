@@ -56,7 +56,7 @@ Provides:   kernel-uname-r = %{version}-%{release}.%{_arch}
 
 Source0:    linux-chromiumos.tar.xz
 
-BuildRequires:  gcc, make, flex, bison, openssl-devel, elfutils-libelf-devel, dwarves
+BuildRequires:  gcc, make, flex, bison, openssl, openssl-devel, elfutils-libelf-devel, dwarves
 BuildRequires:  bc, perl-interpreter, git
 BuildRequires:  python3
 BuildRequires:  /usr/bin/lzma
