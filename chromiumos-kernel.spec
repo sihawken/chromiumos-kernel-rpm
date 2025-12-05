@@ -123,6 +123,24 @@ make mrproper
 
 ./scripts/config --enable CONFIG_BLK_DEV_INITRD
 
+# [FIX] Enable Generic PC Storage Drivers
+# Enable NVMe Support
+./scripts/config --enable CONFIG_NVME_CORE
+./scripts/config --enable CONFIG_BLK_DEV_NVME
+
+# Enable SATA/AHCI Support (Standard SSDs/HDDs)
+./scripts/config --enable CONFIG_ATA
+./scripts/config --enable CONFIG_SATA_AHCI
+./scripts/config --enable CONFIG_SATA_AHCI_PLATFORM
+
+# Enable SCSI/SD Support (Required for SATA)
+./scripts/config --enable CONFIG_SCSI
+./scripts/config --enable CONFIG_BLK_DEV_SD
+
+# Ensure Filesystem Support is built-in (not module) for boot
+./scripts/config --enable CONFIG_EXT4_FS
+./scripts/config --enable CONFIG_BTRFS_FS
+
 # Fix Makefiles for C11 standard
 echo "HOSTCFLAGS += -std=gnu11" >> Makefile
 echo "REALMODE_CFLAGS += -std=gnu11" >> arch/x86/Makefile
