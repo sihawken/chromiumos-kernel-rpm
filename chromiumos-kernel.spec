@@ -310,6 +310,59 @@ make mrproper
 ./scripts/config --module CONFIG_MMC_TOSHIBA_PCI     # Fedora setting: m [4]
 ./scripts/config --module CONFIG_MMC_SDHCI_XENON     # Fedora setting: m [4]
 
+# Power Management & ACPI
+./scripts/config --module CONFIG_ACPI
+./scripts/config --module CONFIG_BATTERY
+./scripts/config --module CONFIG_CHARGER
+./scripts/config --module CONFIG_POWER_RESET
+./scripts/config --module CONFIG_REGULATOR
+./scripts/config --module CONFIG_PWM
+
+# Graphics & Display (DRM)
+./scripts/config --module CONFIG_DRM
+./scripts/config --module CONFIG_DRM_AMD_DC
+./scripts/config --module CONFIG_DRM_NOUVEAU
+./scripts/config --module CONFIG_DRM_I915
+./scripts/config --module CONFIG_DRM_RADEON
+./scripts/config --module CONFIG_FRAMEBUFFER_CONSOLE
+./scripts/config --module CONFIG_BACKLIGHT_CLASS_DEVICE
+./scripts/config --module CONFIG_VIDEO_DEV
+./scripts/config --module CONFIG_CEC_CORE
+
+# Networking (Wireless & Wired)
+./scripts/config --module CONFIG_NET
+./scripts/config --module CONFIG_INET
+./scripts/config --module CONFIG_CFG80211
+./scripts/config --module CONFIG_MAC80211
+./scripts/config --module CONFIG_BT
+./scripts/config --module CONFIG_NFC
+./scripts/config --module CONFIG_IWLWIFI
+./scripts/config --module CONFIG_ATH_CARDS
+./scripts/config --module CONFIG_BRCMFMAC
+./scripts/config --module CONFIG_MT76_CORE
+./scripts/config --module CONFIG_MWIFIEX
+
+# Input Devices (Touch/Keyboard)
+./scripts/config --module CONFIG_INPUT
+./scripts/config --module CONFIG_HID
+./scripts/config --module CONFIG_KEYBOARD_ATKBD
+./scripts/config --module CONFIG_MOUSE_PS2
+./scripts/config --module CONFIG_TOUCHSCREEN_ELAN
+./scripts/config --module CONFIG_RMI4_CORE
+
+# Connectivity & Buses
+./scripts/config --module CONFIG_USB
+./scripts/config --module CONFIG_TYPEC
+./scripts/config --module CONFIG_THUNDERBOLT
+./scripts/config --module CONFIG_I2C
+./scripts/config --module CONFIG_SPI
+./scripts/config --module CONFIG_GPIO_CDEV
+
+# Storage & Crypto
+./scripts/config --module CONFIG_NVME_CORE
+./scripts/config --module CONFIG_MMC
+./scripts/config --module CONFIG_CRYPTO
+
 # Fix Makefiles for C11 standard
 echo "HOSTCFLAGS += -std=gnu11" >> Makefile
 echo "REALMODE_CFLAGS += -std=gnu11" >> arch/x86/Makefile
