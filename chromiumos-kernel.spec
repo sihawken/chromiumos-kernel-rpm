@@ -95,11 +95,6 @@ make mrproper
 # Enable ztsd kernel compression
 ./scripts/config --enable CONFIG_RD_ZSTD
 
-# Filesystem
-./scripts/config --enable CONFIG_BTRFS_FS
-./scripts/config --enable CONFIG_XFS_FS
-./scripts/config --enable CONFIG_EXT4_FS
-
 # Compatibility
 ./scripts/config --disable CONFIG_MODULE_SIG_FORCE
 ./scripts/config --disable CONFIG_RESET_ATTACK_MITIGATION
@@ -300,6 +295,13 @@ make mrproper
 ./scripts/config --enable CONFIG_USB_SUPPORT       # Fedora setting: y (Implied by USB subsystem configs)
 ./scripts/config --enable CONFIG_USB_XHCI_HCD      # Fedora setting: y [28]
 ./scripts/config --enable CONFIG_USB_EHCI_HCD      # Fedora setting: y [28]
+
+# Force MMC/SD/eMMC drivers to be built-in (Critical for booting)
+./scripts/config --enable CONFIG_MMC
+./scripts/config --enable CONFIG_MMC_BLOCK
+./scripts/config --enable CONFIG_MMC_SDHCI
+./scripts/config --enable CONFIG_MMC_SDHCI_PCI
+./scripts/config --enable CONFIG_MMC_SDHCI_ACPI
 
 # Fix Makefiles for C11 standard
 echo "HOSTCFLAGS += -std=gnu11" >> Makefile
