@@ -241,6 +241,66 @@ make mrproper
 ./scripts/config --module CONFIG_UDF_FS
 ./scripts/config --module CONFIG_VFAT_FS
 
+# Core Kernel and General Setup
+./scripts/config --enable CONFIG_SYSVIPC           # Fedora setting: y [1]
+./scripts/config --enable CONFIG_POSIX_MQUEUE      # Fedora setting: y [1]
+./scripts/config --enable CONFIG_AUDIT             # Fedora setting: y [1]
+./scripts/config --enable CONFIG_AUDITSYSCALL      # Fedora setting: y [1]
+./scripts/config --module CONFIG_IKHEADERS         # Fedora setting: m [2]
+./scripts/config --enable CONFIG_FUTEX_PI          # Fedora setting: y [3]
+./scripts/config --enable CONFIG_IO_URING          # Fedora setting: y [3]
+./scripts/config --enable CONFIG_KEXEC_CORE        # Fedora setting: y [4]
+./scripts/config --enable CONFIG_CRASH_DUMP        # Fedora setting: y [4]
+./scripts/config --enable CONFIG_RSEQ              # Fedora setting: y [3]
+
+# Scheduling and Resource Management
+./scripts/config --enable CONFIG_SCHED_CORE        # Fedora setting: y [5]
+./scripts/config --enable CONFIG_VIRT_CPU_ACCOUNTING # Fedora setting: y [5]
+./scripts/config --enable CONFIG_CGROUPS           # Fedora setting: y [6]
+./scripts/config --enable CONFIG_MEMCG             # Fedora setting: y [6]
+./scripts/config --enable CONFIG_CFS_BANDWIDTH     # Fedora setting: y [6]
+./scripts/config --enable CONFIG_CPUSETS           # Fedora setting: y [7]
+./scripts/config --enable CONFIG_NUMA_BALANCING    # Fedora setting: y [6]
+./scripts/config --enable CONFIG_NAMESPACES        # Fedora setting: y [7]
+./scripts/config --enable CONFIG_USER_NS           # Fedora setting: y [7]
+
+# CPU and Architecture Features
+./scripts/config --enable CONFIG_HPET_TIMER        # Fedora setting: y [8]
+./scripts/config --enable CONFIG_X86_MCE           # Fedora setting: y [9]
+./scripts/config --enable CONFIG_NUMA              # Fedora setting: y [10]
+./scripts/config --enable CONFIG_X86_UMIP          # Fedora setting: y [11]
+./scripts/config --enable CONFIG_X86_CET           # Fedora setting: y [12]
+./scripts/config --enable CONFIG_AMD_MEM_ENCRYPT   # Fedora setting: y [10]
+
+# Power Management and Suspend
+./scripts/config --enable CONFIG_SUSPEND           # Fedora setting: y [13]
+./scripts/config --enable CONFIG_HIBERNATION       # Fedora setting: y [13]
+./scripts/config --enable CONFIG_ACPI_BATTERY      # Fedora setting: y [14]
+./scripts/config --enable CONFIG_CPU_FREQ          # Fedora setting: y [15]
+./scripts/config --enable CONFIG_CPU_IDLE          # Fedora setting: y [16]
+./scripts/config --enable CONFIG_INTEL_IDLE        # Fedora setting: y [17] (Note: ChromeOS [18] sets this to 'y', but listing for completion if it was missing or different.)
+
+# Networking and Filtering
+./scripts/config --enable CONFIG_NET_INGRESS       # Fedora setting: y [19]
+./scripts/config --enable CONFIG_NET_EGRESS        # Fedora setting: y [19]
+./scripts/config --enable CONFIG_NETFILTER_ADVANCED # Fedora setting: y [20]
+./scripts/config --module CONFIG_NF_CONNTRACK      # Fedora setting: m [21]
+./scripts/config --enable CONFIG_MPTCP             # Fedora setting: y [20]
+
+# Virtualization
+./scripts/config --enable CONFIG_VIRTUALIZATION    # Fedora setting: y [22]
+./scripts/config --enable CONFIG_KVM_COMMON        # Fedora setting: y [23]
+./scripts/config --enable CONFIG_XEN_DOM0          # Fedora setting: y [24]
+
+# General Driver Infrastructure and Peripherals
+./scripts/config --enable CONFIG_INPUT             # Fedora setting: y [25]
+./scripts/config --enable CONFIG_INPUT_KEYBOARD    # Fedora setting: y [25]
+./scripts/config --enable CONFIG_INPUT_MOUSE       # Fedora setting: y [26]
+./scripts/config --enable CONFIG_FW_LOADER         # Fedora setting: y [27]
+./scripts/config --enable CONFIG_USB_SUPPORT       # Fedora setting: y (Implied by USB subsystem configs)
+./scripts/config --enable CONFIG_USB_XHCI_HCD      # Fedora setting: y [28]
+./scripts/config --enable CONFIG_USB_EHCI_HCD      # Fedora setting: y [28]
+
 # Fix Makefiles for C11 standard
 echo "HOSTCFLAGS += -std=gnu11" >> Makefile
 echo "REALMODE_CFLAGS += -std=gnu11" >> arch/x86/Makefile
