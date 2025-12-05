@@ -96,6 +96,20 @@ make mrproper
 
 # Compatibility
 ./scripts/config --disable CONFIG_MODULE_SIG_FORCE
+./scripts/config --disable CONFIG_RESET_ATTACK_MITIGATION
+
+# Set LSM
+./scripts/config --set-str CONFIG_LSM "lockdown,yama,integrity,selinux,bpf,landlock,ipe"
+# Enable BPF LSM (Fedora standard)
+./scripts/config --enable CONFIG_BPF_LSM
+# Enable Integrity Policy Enforcement (Fedora standard)
+./scripts/config --enable CONFIG_SECURITY_IPE
+# Disable LoadPin (Used by ChromeOS to lock drivers to one device)
+./scripts/config --disable CONFIG_SECURITY_LOADPIN
+# Disable SafeSetID (Used by ChromeOS for strict UID transition sandboxing)
+./scripts/config --disable CONFIG_SECURITY_SAFESETID
+# Disable ChromiumOS LSM (Specific to ChromeOS hardware/boot)
+./scripts/config --disable CONFIG_SECURITY_CHROMIUMOS
 
 # # ----------------------------------------------------------------------
 # # FIX 2: Enable Graphics & Console (Fixes "Black Screen")
