@@ -125,10 +125,10 @@ make mrproper
 ./scripts/config --enable CONFIG_BLK_DEV_INITRD
 
 # Core NVMe Support (Modules)
-./scripts/config --module CONFIG_NVME_KEYRING
-./scripts/config --module CONFIG_NVME_AUTH
-./scripts/config --module CONFIG_NVME_CORE
-./scripts/config --module CONFIG_BLK_DEV_NVME
+./scripts/config --enable CONFIG_NVME_KEYRING
+./scripts/config --enable CONFIG_NVME_AUTH
+./scripts/config --enable CONFIG_NVME_CORE
+./scripts/config --enable CONFIG_BLK_DEV_NVME
 
 # NVMe Features (Built-in)
 ./scripts/config --enable CONFIG_NVME_MULTIPATH
@@ -160,6 +160,13 @@ make mrproper
 # NVMe Target Security (Built-in)
 ./scripts/config --enable CONFIG_NVME_TARGET_TCP_TLS
 ./scripts/config --enable CONFIG_NVME_TARGET_AUTH
+
+# [FIX] Enable NVMe over PCIe (Critical for internal NVMe drives)
+./scripts/config --enable CONFIG_PCIE_DW
+./scripts/config --enable CONFIG_PCIE_DW_PLATFORM
+
+# [FIX] Ensure the kernel can scan the PCI bus for drives
+./scripts/config --enable CONFIG_PCI_MSI
 
 # Fix Makefiles for C11 standard
 echo "HOSTCFLAGS += -std=gnu11" >> Makefile
