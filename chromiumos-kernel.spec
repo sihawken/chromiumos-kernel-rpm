@@ -117,6 +117,8 @@ make mrproper
 ./scripts/config --enable CONFIG_FRAMEBUFFER_CONSOLE
 ./scripts/config --enable CONFIG_FB
 
+./scripts/config --enable CONFIG_BLK_DEV_INITRD
+
 # Fix Makefiles for C11 standard
 echo "HOSTCFLAGS += -std=gnu11" >> Makefile
 echo "REALMODE_CFLAGS += -std=gnu11" >> arch/x86/Makefile
