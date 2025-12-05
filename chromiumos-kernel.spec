@@ -88,15 +88,21 @@ make mrproper
 ./scripts/config --disable CONFIG_LOCK_DOWN_KERNEL_FORCE_INTEGRITY
 ./scripts/config --enable CONFIG_LOCK_DOWN_KERNEL_FORCE_NONE
 
-# Enable general virtualization
+# Enable virtualization
 ./scripts/config --enable CONFIG_KVM
+./scripts/config --enable CONFIG_KVM_X86
 
 # Enable ztsd kernel compression
 ./scripts/config --enable CONFIG_RD_ZSTD
 
+# Filesystem
+./scripts/config --enable CONFIG_BTRFS_FS
+./scripts/config --enable CONFIG_XFS_FS
+
 # Compatibility
 ./scripts/config --disable CONFIG_MODULE_SIG_FORCE
 ./scripts/config --disable CONFIG_RESET_ATTACK_MITIGATION
+./scripts/config --disable CONFIG_LOCK_DOWN_KERNEL_FORCE_INTEGRITY
 
 # Set LSM
 ./scripts/config --set-str CONFIG_LSM "lockdown,yama,integrity,selinux,bpf,landlock,ipe"
@@ -104,29 +110,6 @@ make mrproper
 ./scripts/config --enable CONFIG_BPF_LSM
 # Enable Integrity Policy Enforcement (Fedora standard)
 ./scripts/config --enable CONFIG_SECURITY_IPE
-# Disable LoadPin (Used by ChromeOS to lock drivers to one device)
-./scripts/config --disable CONFIG_SECURITY_LOADPIN
-# Disable SafeSetID (Used by ChromeOS for strict UID transition sandboxing)
-./scripts/config --disable CONFIG_SECURITY_SAFESETID
-# Disable ChromiumOS LSM (Specific to ChromeOS hardware/boot)
-./scripts/config --disable CONFIG_SECURITY_CHROMIUMOS
-
-# # ----------------------------------------------------------------------
-# # FIX 2: Enable Graphics & Console (Fixes "Black Screen")
-# # ChromiumOS defaults disable these, so we must force them on.
-# # ----------------------------------------------------------------------
-# 1. Enable the Text Console (VT) so you see text instead of blackness
-# ./scripts/config --enable CONFIG_VT
-# ./scripts/config --enable CONFIG_VGA_CONSOLE
-# ./scripts/config --enable CONFIG_FRAMEBUFFER_CONSOLE
-# 
-# # 2. Enable UEFI/Generic Framebuffers (Required for 6.1+ on PC)
-# ./scripts/config --enable CONFIG_FB_EFI
-# ./scripts/config --enable CONFIG_DRM_SIMPLEDRM
-# ./scripts/config --enable CONFIG_SYSFB_SIMPLEFB
-# 
-# # 3. Ensure DRM (Direct Rendering) is built-in
-# ./scripts/config --enable CONFIG_DRM
 
 # Fix Makefiles for C11 standard
 echo "HOSTCFLAGS += -std=gnu11" >> Makefile
