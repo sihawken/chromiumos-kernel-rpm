@@ -115,7 +115,11 @@ make mrproper
 ./scripts/config --enable CONFIG_VT
 ./scripts/config --enable CONFIG_VT_CONSOLE
 ./scripts/config --enable CONFIG_FRAMEBUFFER_CONSOLE
+
 ./scripts/config --enable CONFIG_FB
+./scripts/config --enable CONFIG_FB_VGA16
+./scripts/config --enable CONFIG_FB_VESA
+./scripts/config --enable CONFIG_FB_EFI
 
 ./scripts/config --enable CONFIG_BLK_DEV_INITRD
 
