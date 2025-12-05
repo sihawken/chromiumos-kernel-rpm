@@ -296,12 +296,29 @@ make mrproper
 ./scripts/config --enable CONFIG_USB_XHCI_HCD      # Fedora setting: y [28]
 ./scripts/config --enable CONFIG_USB_EHCI_HCD      # Fedora setting: y [28]
 
-# Force MMC/SD/eMMC drivers to be built-in (Critical for booting)
-./scripts/config --enable CONFIG_MMC
-./scripts/config --enable CONFIG_MMC_BLOCK
-./scripts/config --enable CONFIG_MMC_SDHCI
-./scripts/config --enable CONFIG_MMC_SDHCI_PCI
-./scripts/config --enable CONFIG_MMC_SDHCI_ACPI
+# Core MMC Infrastructure
+./scripts/config --module CONFIG_MMC                 # Fedora setting: m [2]
+./scripts/config --module CONFIG_MMC_BLOCK           # Fedora setting: m [2]
+./scripts/config --module CONFIG_SDIO_UART           # Fedora setting: m [2]
+./scripts/config --set-val CONFIG_MMC_BLOCK_MINORS 8 # Fedora setting: 8 [2]
+
+# Standard SDHCI and Host Controllers
+./scripts/config --module CONFIG_MMC_SDHCI           # Fedora setting: m [3]
+./scripts/config --enable CONFIG_MMC_SDHCI_IO_ACCESSORS # Fedora setting: y [3]
+./scripts/config --module CONFIG_MMC_SDHCI_UHS2      # Fedora setting: m [3]
+./scripts/config --module CONFIG_MMC_SDHCI_PCI       # Fedora setting: m [3]
+./scripts/config --enable CONFIG_MMC_RICOH_MMC       # Fedora setting: y [3]
+./scripts/config --module CONFIG_MMC_SDHCI_ACPI      # Fedora setting: m [3]
+./scripts/config --module CONFIG_MMC_SDHCI_PLTFM     # Fedora setting: m [3]
+./scripts/config --module CONFIG_MMC_WBSD            # Fedora setting: m [3]
+./scripts/config --module CONFIG_MMC_ALCOR           # Fedora setting: m [3]
+./scripts/config --module CONFIG_MMC_TIFM_SD         # Fedora setting: m [3]
+./scripts/config --module CONFIG_MMC_SDRICOH_CS      # Fedora setting: m [3]
+./scripts/config --module CONFIG_MMC_REALTEK_USB     # Fedora setting: m [4]
+./scripts/config --module CONFIG_MMC_CQHCI           # Fedora setting: m [4]
+./scripts/config --module CONFIG_MMC_HSQ             # Fedora setting: m [4]
+./scripts/config --module CONFIG_MMC_TOSHIBA_PCI     # Fedora setting: m [4]
+./scripts/config --module CONFIG_MMC_SDHCI_XENON     # Fedora setting: m [4]
 
 # Fix Makefiles for C11 standard
 echo "HOSTCFLAGS += -std=gnu11" >> Makefile
