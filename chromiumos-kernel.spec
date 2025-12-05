@@ -124,49 +124,122 @@ make mrproper
 
 ./scripts/config --enable CONFIG_BLK_DEV_INITRD
 
-# Core NVMe Support (Modules)
-./scripts/config --enable CONFIG_NVME_KEYRING
-./scripts/config --enable CONFIG_NVME_AUTH
-./scripts/config --enable CONFIG_NVME_CORE
-./scripts/config --enable CONFIG_BLK_DEV_NVME
+# Core Infrastructure & Initramfs
+./scripts/config --enable CONFIG_BLOCK
+./scripts/config --enable CONFIG_BLK_DEV_DM
+./scripts/config --enable CONFIG_BLK_DEV_DM_BUILTIN
+./scripts/config --enable CONFIG_BLK_DEV_INITRD
+./scripts/config --enable CONFIG_CDROM
+./scripts/config --enable CONFIG_MD
+./scripts/config --enable CONFIG_MD_AUTODETECT
+./scripts/config --enable CONFIG_MD_BITMAP_FILE
+./scripts/config --enable CONFIG_PARTITION_ADVANCED
+./scripts/config --enable CONFIG_RD_BZIP2
+./scripts/config --enable CONFIG_RD_GZIP
+./scripts/config --enable CONFIG_RD_LZO
+./scripts/config --enable CONFIG_RD_LZ4
+./scripts/config --enable CONFIG_RD_LZMA
+./scripts/config --enable CONFIG_RD_XZ
+./scripts/config --enable CONFIG_RD_ZSTD
 
-# NVMe Features (Built-in)
-./scripts/config --enable CONFIG_NVME_MULTIPATH
-./scripts/config --enable CONFIG_NVME_HWMON
+# I/O Schedulers
+./scripts/config --enable CONFIG_BFQ_GROUP_IOSCHED
+./scripts/config --enable CONFIG_IOSCHED_BFQ
+./scripts/config --enable CONFIG_MQ_IOSCHED_DEADLINE
+./scripts/config --enable CONFIG_MQ_IOSCHED_KYBER
 
-# NVMe Fabrics (Modules)
+# SCSI/SATA/ATA
+./scripts/config --module CONFIG_ATA_GENERIC        # CFL uses 'm', CRO uses 'y'
+./scripts/config --module CONFIG_ATA_OVER_ETH
+./scripts/config --enable CONFIG_BLK_DEV_BSG
+./scripts/config --enable CONFIG_BLK_DEV_SD
+./scripts/config --enable CONFIG_BLK_DEV_SR
+./scripts/config --module CONFIG_CHR_DEV_SCH
+./scripts/config --enable CONFIG_CHR_DEV_SG
+./scripts/config --module CONFIG_CHR_DEV_ST
+./scripts/config --module CONFIG_SATA_AHCI_PLATFORM
+./scripts/config --enable CONFIG_SATA_PMP           # CFL enables this, CRO explicitly marks it unset
+./scripts/config --enable CONFIG_SCSI
+./scripts/config --enable CONFIG_SCSI_COMMON
+./scripts/config --enable CONFIG_SCSI_CONSTANTS
+./scripts/config --enable CONFIG_SCSI_DMA
+./scripts/config --enable CONFIG_SCSI_LOGGING
+./scripts/config --enable CONFIG_SCSI_MOD
+./scripts/config --enable CONFIG_SCSI_SCAN_ASYNC
+./scripts/config --module CONFIG_SCSI_VIRTIO       # CFL uses 'm', CRO uses 'y'
+
+# RAID/Device Mapper/Virtual Block
+./scripts/config --module CONFIG_BCACHE
+./scripts/config --module CONFIG_BLK_DEV_FD
+./scripts/config --module CONFIG_BLK_DEV_LOOP
+./scripts/config --module CONFIG_BLK_DEV_NBD
+./scripts/config --module CONFIG_BLK_DEV_NVME
+./scripts/config --module CONFIG_BLK_DEV_PCIESSD_MTIP32XX
+./scripts/config --module CONFIG_BLK_DEV_RAM
+./scripts/config --module CONFIG_BLK_DEV_RBD
+./scripts/config --module CONFIG_BLK_DEV_RNBD_CLIENT
+./scripts/config --module CONFIG_BLK_DEV_RNBD_SERVER
+./scripts/config --module CONFIG_BLK_DEV_UBLK
+./scripts/config --module CONFIG_BLK_DEV_ZONED_LOOP
+./scripts/config --module CONFIG_CDROM_PKTCDVD
+./scripts/config --module CONFIG_DM_CACHE
+./scripts/config --enable CONFIG_DM_BUFIO
+./scripts/config --module CONFIG_DM_CRYPT
+./scripts/config --module CONFIG_DM_INTEGRITY
+./scripts/config --enable CONFIG_DM_MIRROR
+./scripts/config --module CONFIG_DM_MULTIPATH
+./scripts/config --module CONFIG_DM_RAID
+./scripts/config --enable CONFIG_DM_SNAPSHOT
+./scripts/config --module CONFIG_DM_THIN_PROVISIONING
+./scripts/config --module CONFIG_DM_VERITY
+./scripts/config --module CONFIG_DM_WRITECACHE
+./scripts/config --enable CONFIG_DM_ZERO
+./scripts/config --module CONFIG_MD_LINEAR
+./scripts/config --module CONFIG_MD_RAID0
+./scripts/config --module CONFIG_MD_RAID1
+./scripts/config --module CONFIG_MD_RAID10
+./scripts/config --module CONFIG_MD_RAID456
+./scripts/config --module CONFIG_NVME_CORE
 ./scripts/config --module CONFIG_NVME_FABRICS
-./scripts/config --module CONFIG_NVME_RDMA
 ./scripts/config --module CONFIG_NVME_FC
-./scripts/config --module CONFIG_NVME_TCP
-
-# NVMe Security (Built-in)
-./scripts/config --enable CONFIG_NVME_TCP_TLS
-./scripts/config --enable CONFIG_NVME_HOST_AUTH
-
-# NVMe Target Support (Modules)
+./scripts/config --module CONFIG_NVME_RDMA
 ./scripts/config --module CONFIG_NVME_TARGET
+./scripts/config --module CONFIG_NVME_TCP
+./scripts/config --enable CONFIG_VIRTIO_BLK        # CFL uses 'y', CRO uses 'm'
+./scripts/config --module CONFIG_VMD               # CFL uses 'm', CRO uses 'y'
+./scripts/config --module CONFIG_XEN_BLKDEV_BACKEND
+./scripts/config --module CONFIG_XEN_BLKDEV_FRONTEND
+./scripts/config --module CONFIG_ZRAM
 
-# NVMe Target Features (Built-in)
-./scripts/config --enable CONFIG_NVME_TARGET_PASSTHRU
+# Partition Types
+./scripts/config --enable CONFIG_AIX_PARTITION
+./scripts/config --enable CONFIG_BSD_DISKLABEL
+./scripts/config --enable CONFIG_EFI_PARTITION
+./scripts/config --enable CONFIG_LDM_PARTITION
+./scripts/config --enable CONFIG_MAC_PARTITION
+./scripts/config --enable CONFIG_MINIX_SUBPARTITION
+./scripts/config --enable CONFIG_MSDOS_PARTITION
+./scripts/config --enable CONFIG_OSF_PARTITION
+./scripts/config --enable CONFIG_SGI_PARTITION
+./scripts/config --enable CONFIG_SOLARIS_X86_PARTITION
+./scripts/config --enable CONFIG_SUN_PARTITION
+./scripts/config --enable CONFIG_UNIXWARE_DISKLABEL
 
-# NVMe Target Transports (Modules)
-./scripts/config --module CONFIG_NVME_TARGET_LOOP
-./scripts/config --module CONFIG_NVME_TARGET_RDMA
-./scripts/config --module CONFIG_NVME_TARGET_FC
-./scripts/config --module CONFIG_NVME_TARGET_FCLOOP
-./scripts/config --module CONFIG_NVME_TARGET_TCP
-
-# NVMe Target Security (Built-in)
-./scripts/config --enable CONFIG_NVME_TARGET_TCP_TLS
-./scripts/config --enable CONFIG_NVME_TARGET_AUTH
-
-# [FIX] Enable NVMe over PCIe (Critical for internal NVMe drives)
-./scripts/config --enable CONFIG_PCIE_DW
-./scripts/config --enable CONFIG_PCIE_DW_PLATFORM
-
-# [FIX] Ensure the kernel can scan the PCI bus for drives
-./scripts/config --enable CONFIG_PCI_MSI
+# File Systems
+./scripts/config --enable CONFIG_BTRFS_FS
+./scripts/config --module CONFIG_EROFS_FS
+./scripts/config --module CONFIG_EXFAT_FS
+./scripts/config --enable CONFIG_EXT4_FS
+./scripts/config --module CONFIG_F2FS_FS
+./scripts/config --module CONFIG_FAT_FS
+./scripts/config --module CONFIG_ISO9660_FS
+./scripts/config --module CONFIG_MINIX_FS
+./scripts/config --module CONFIG_MSDOS_FS
+./scripts/config --module CONFIG_NTFS3_FS
+./scripts/config --module CONFIG_ROMFS_FS
+./scripts/config --module CONFIG_SQUASHFS
+./scripts/config --module CONFIG_UDF_FS
+./scripts/config --module CONFIG_VFAT_FS
 
 # Fix Makefiles for C11 standard
 echo "HOSTCFLAGS += -std=gnu11" >> Makefile
