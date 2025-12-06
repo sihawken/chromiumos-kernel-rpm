@@ -166,7 +166,6 @@ make mrproper
 # RAID/Device Mapper/Virtual Block
 ./scripts/config --module CONFIG_BCACHE
 ./scripts/config --module CONFIG_BLK_DEV_FD
-./scripts/config --module CONFIG_BLK_DEV_LOOP
 ./scripts/config --module CONFIG_BLK_DEV_NBD
 ./scripts/config --module CONFIG_BLK_DEV_NVME
 ./scripts/config --module CONFIG_BLK_DEV_PCIESSD_MTIP32XX
@@ -186,7 +185,7 @@ make mrproper
 ./scripts/config --module CONFIG_DM_RAID
 ./scripts/config --enable CONFIG_DM_SNAPSHOT
 ./scripts/config --module CONFIG_DM_THIN_PROVISIONING
-./scripts/config --module CONFIG_DM_VERITY
+./scripts/config --enable CONFIG_DM_VERITY
 ./scripts/config --module CONFIG_DM_WRITECACHE
 ./scripts/config --enable CONFIG_DM_ZERO
 ./scripts/config --module CONFIG_MD_LINEAR
@@ -212,7 +211,6 @@ make mrproper
 
 # File Systems
 ./scripts/config --enable CONFIG_BTRFS_FS
-./scripts/config --module CONFIG_EROFS_FS
 ./scripts/config --module CONFIG_EXFAT_FS
 ./scripts/config --enable CONFIG_EXT4_FS
 ./scripts/config --module CONFIG_F2FS_FS
@@ -222,7 +220,7 @@ make mrproper
 ./scripts/config --module CONFIG_MSDOS_FS
 ./scripts/config --module CONFIG_NTFS3_FS
 ./scripts/config --module CONFIG_ROMFS_FS
-./scripts/config --module CONFIG_SQUASHFS
+./scripts/config --enable CONFIG_SQUASHFS
 ./scripts/config --module CONFIG_UDF_FS
 ./scripts/config --module CONFIG_VFAT_FS
 
@@ -366,10 +364,8 @@ make mrproper
 # ComposeFS required for Fedora atomic
 ./scripts/config --enable CONFIG_OVERLAY_FS
 ./scripts/config --enable CONFIG_BLK_DEV_LOOP
-./scripts/config --enable CONFIG_EROFS_FS
 
 # 1. Enable EROFS & Compression (Required to read the image data)
-./scripts/config --enable CONFIG_EROFS_FS
 ./scripts/config --enable CONFIG_EROFS_FS_ZIP
 ./scripts/config --enable CONFIG_EROFS_FS_ZIP_LZ4
 ./scripts/config --enable CONFIG_EROFS_FS_ZIP_ZSTD
@@ -389,22 +385,20 @@ make mrproper
 # [FIX] Force Autofs to be built-in to satisfy systemd
 ./scripts/config --enable CONFIG_AUTOFS_FS
 
-# 1. Boot & EFI Support (Fixes "Failed to register efivars")
+# ---------------------------------------------------------
+# CRITICAL FIX FOR FEDORA BOOT (EFI & Systemd)
+# ---------------------------------------------------------
 ./scripts/config --enable CONFIG_EFI
 ./scripts/config --enable CONFIG_EFI_STUB
 ./scripts/config --enable CONFIG_EFIVAR_FS
+./scripts/config --enable CONFIG_EFI_VARS_PSTORE
+./scripts/config --enable CONFIG_EFI_RUNTIME_WRAPPERS
 
 # 2. Filesystem Layers (Fixes "No such device" for ComposeFS)
 ./scripts/config --enable CONFIG_OVERLAY_FS
 # Enable advanced overlay features used by OSTree
 ./scripts/config --enable CONFIG_OVERLAY_FS_REDIRECT_DIR
 ./scripts/config --enable CONFIG_OVERLAY_FS_REDIRECT_ALWAYS_FOLLOW
-
-# 3. EROFS Support (Confirmed working, but ensure these stay enabled)
-./scripts/config --enable CONFIG_EROFS_FS
-./scripts/config --enable CONFIG_EROFS_FS_ZIP
-./scripts/config --enable CONFIG_EROFS_FS_ZIP_LZ4
-./scripts/config --enable CONFIG_EROFS_FS_ZIP_ZSTD
 
 # 4. Integrity & Verification (CRITICAL FIX)
 # We MUST enable the feature so ComposeFS works...
