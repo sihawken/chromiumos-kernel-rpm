@@ -320,6 +320,14 @@ make mrproper
 ./scripts/config --module CONFIG_MMC_TOSHIBA_PCI     # Fedora setting: m [4]
 ./scripts/config --module CONFIG_MMC_SDHCI_XENON     # Fedora setting: m [4]
 
+# Force MMC/SD/eMMC drivers to be built-in (Critical for booting)
+
+./scripts/config --enable CONFIG_MMC
+./scripts/config --enable CONFIG_MMC_BLOCK
+./scripts/config --enable CONFIG_MMC_SDHCI
+./scripts/config --enable CONFIG_MMC_SDHCI_PCI
+./scripts/config --enable CONFIG_MMC_SDHCI_ACPI
+
 # ComposeFS required for Fedora atomic
 ./scripts/config --enable CONFIG_OVERLAY_FS
 ./scripts/config --enable CONFIG_BLK_DEV_LOOP
