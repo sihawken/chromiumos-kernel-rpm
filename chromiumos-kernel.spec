@@ -368,6 +368,27 @@ make mrproper
 ./scripts/config --enable CONFIG_BLK_DEV_LOOP
 ./scripts/config --enable CONFIG_EROFS_FS
 
+# 1. Enable EROFS & Compression (Required to read the image data)
+./scripts/config --enable CONFIG_EROFS_FS
+./scripts/config --enable CONFIG_EROFS_FS_ZIP
+./scripts/config --enable CONFIG_EROFS_FS_ZIP_LZ4
+./scripts/config --enable CONFIG_EROFS_FS_ZIP_ZSTD
+
+# 2. Enable OverlayFS (Required to layer the image)
+./scripts/config --enable CONFIG_OVERLAY_FS
+./scripts/config --enable CONFIG_OVERLAY_FS_REDIRECT_DIR
+./scripts/config --enable CONFIG_OVERLAY_FS_REDIRECT_ALWAYS_FOLLOW
+
+# 3. Enable FS_Verity (REQUIRED for ComposeFS to mount at all)
+./scripts/config --enable CONFIG_FS_VERITY
+
+# 4. DISABLE Built-in Signatures (CRITICAL: Fixes the boot loop)
+# If this is 'y', the kernel rejects the Fedora image because it isn't signed by YOU.
+./scripts/config --disable CONFIG_FS_VERITY_BUILTIN_SIGNATURES
+
+# [FIX] Force Autofs to be built-in to satisfy systemd
+./scripts/config --enable CONFIG_AUTOFS_FS
+
 # Fix Makefiles for C11 standard
 echo "HOSTCFLAGS += -std=gnu11" >> Makefile
 echo "REALMODE_CFLAGS += -std=gnu11" >> arch/x86/Makefile
