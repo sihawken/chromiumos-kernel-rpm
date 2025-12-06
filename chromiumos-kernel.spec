@@ -207,8 +207,18 @@ make mrproper
 ./scripts/config --module CONFIG_ZRAM
 
 # Partition Types
+./scripts/config --enable CONFIG_AIX_PARTITION
+./scripts/config --enable CONFIG_BSD_DISKLABEL
 ./scripts/config --enable CONFIG_EFI_PARTITION
+./scripts/config --enable CONFIG_LDM_PARTITION
+./scripts/config --enable CONFIG_MAC_PARTITION
+./scripts/config --enable CONFIG_MINIX_SUBPARTITION
 ./scripts/config --enable CONFIG_MSDOS_PARTITION
+./scripts/config --enable CONFIG_OSF_PARTITION
+./scripts/config --enable CONFIG_SGI_PARTITION
+./scripts/config --enable CONFIG_SOLARIS_X86_PARTITION
+./scripts/config --enable CONFIG_SUN_PARTITION
+./scripts/config --enable CONFIG_UNIXWARE_DISKLABEL
 
 # File Systems
 ./scripts/config --enable CONFIG_BTRFS_FS
@@ -310,64 +320,10 @@ make mrproper
 ./scripts/config --module CONFIG_MMC_TOSHIBA_PCI     # Fedora setting: m [4]
 ./scripts/config --module CONFIG_MMC_SDHCI_XENON     # Fedora setting: m [4]
 
-# Power Management & ACPI
-./scripts/config --module CONFIG_ACPI
-./scripts/config --module CONFIG_BATTERY
-./scripts/config --module CONFIG_CHARGER
-./scripts/config --module CONFIG_POWER_RESET
-./scripts/config --module CONFIG_REGULATOR
-./scripts/config --module CONFIG_PWM
-
-# Graphics & Display (DRM)
-./scripts/config --module CONFIG_DRM
-./scripts/config --module CONFIG_DRM_AMD_DC
-./scripts/config --module CONFIG_DRM_NOUVEAU
-./scripts/config --module CONFIG_DRM_I915
-./scripts/config --module CONFIG_DRM_RADEON
-./scripts/config --module CONFIG_FRAMEBUFFER_CONSOLE
-./scripts/config --module CONFIG_BACKLIGHT_CLASS_DEVICE
-./scripts/config --module CONFIG_VIDEO_DEV
-./scripts/config --module CONFIG_CEC_CORE
-
-# Networking (Wireless & Wired)
-./scripts/config --module CONFIG_NET
-./scripts/config --module CONFIG_INET
-./scripts/config --module CONFIG_CFG80211
-./scripts/config --module CONFIG_MAC80211
-./scripts/config --module CONFIG_BT
-./scripts/config --module CONFIG_NFC
-./scripts/config --module CONFIG_IWLWIFI
-./scripts/config --module CONFIG_ATH_CARDS
-./scripts/config --module CONFIG_BRCMFMAC
-./scripts/config --module CONFIG_MT76_CORE
-./scripts/config --module CONFIG_MWIFIEX
-
-# Input Devices (Touch/Keyboard)
-./scripts/config --module CONFIG_INPUT
-./scripts/config --module CONFIG_HID
-./scripts/config --module CONFIG_KEYBOARD_ATKBD
-./scripts/config --module CONFIG_MOUSE_PS2
-./scripts/config --module CONFIG_TOUCHSCREEN_ELAN
-./scripts/config --module CONFIG_RMI4_CORE
-
-# Connectivity & Buses
-./scripts/config --module CONFIG_USB
-./scripts/config --module CONFIG_TYPEC
-./scripts/config --module CONFIG_THUNDERBOLT
-./scripts/config --module CONFIG_I2C
-./scripts/config --module CONFIG_SPI
-./scripts/config --module CONFIG_GPIO_CDEV
-
-# Storage & Crypto
-./scripts/config --module CONFIG_NVME_CORE
-./scripts/config --module CONFIG_MMC
-./scripts/config --module CONFIG_CRYPTO
-
 # ComposeFS required for Fedora atomic
 ./scripts/config --enable CONFIG_OVERLAY_FS
 ./scripts/config --enable CONFIG_BLK_DEV_LOOP
 ./scripts/config --enable CONFIG_EROFS_FS
-
 
 # Fix Makefiles for C11 standard
 echo "HOSTCFLAGS += -std=gnu11" >> Makefile
