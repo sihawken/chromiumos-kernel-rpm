@@ -389,6 +389,27 @@ make mrproper
 # [FIX] Force Autofs to be built-in to satisfy systemd
 ./scripts/config --enable CONFIG_AUTOFS_FS
 
+# 1. Boot & EFI Support (Fixes "Failed to register efivars")
+./scripts/config --enable CONFIG_EFI
+./scripts/config --enable CONFIG_EFI_STUB
+./scripts/config --enable CONFIG_EFIVAR_FS
+
+# 2. Filesystem Layers (Fixes "No such device" for ComposeFS)
+./scripts/config --enable CONFIG_OVERLAY_FS
+# Enable advanced overlay features used by OSTree
+./scripts/config --enable CONFIG_OVERLAY_FS_REDIRECT_DIR
+./scripts/config --enable CONFIG_OVERLAY_FS_REDIRECT_ALWAYS_FOLLOW
+
+# 3. EROFS Support (Confirmed working, but ensure these stay enabled)
+./scripts/config --enable CONFIG_EROFS_FS
+./scripts/config --enable CONFIG_EROFS_FS_ZIP
+./scripts/config --enable CONFIG_EROFS_FS_ZIP_LZ4
+./scripts/config --enable CONFIG_EROFS_FS_ZIP_ZSTD
+
+# 4. Integrity & Verification (CRITICAL FIX)
+# We MUST enable the feature so ComposeFS works...
+./scripts/config --enable CONFIG_FS_VERITY
+
 # Fix Makefiles for C11 standard
 echo "HOSTCFLAGS += -std=gnu11" >> Makefile
 echo "REALMODE_CFLAGS += -std=gnu11" >> arch/x86/Makefile
