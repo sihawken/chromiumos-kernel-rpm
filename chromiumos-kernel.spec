@@ -207,18 +207,8 @@ make mrproper
 ./scripts/config --module CONFIG_ZRAM
 
 # Partition Types
-./scripts/config --enable CONFIG_AIX_PARTITION
-./scripts/config --enable CONFIG_BSD_DISKLABEL
 ./scripts/config --enable CONFIG_EFI_PARTITION
-./scripts/config --enable CONFIG_LDM_PARTITION
-./scripts/config --enable CONFIG_MAC_PARTITION
-./scripts/config --enable CONFIG_MINIX_SUBPARTITION
 ./scripts/config --enable CONFIG_MSDOS_PARTITION
-./scripts/config --enable CONFIG_OSF_PARTITION
-./scripts/config --enable CONFIG_SGI_PARTITION
-./scripts/config --enable CONFIG_SOLARIS_X86_PARTITION
-./scripts/config --enable CONFIG_SUN_PARTITION
-./scripts/config --enable CONFIG_UNIXWARE_DISKLABEL
 
 # File Systems
 ./scripts/config --enable CONFIG_BTRFS_FS
@@ -320,19 +310,6 @@ make mrproper
 ./scripts/config --module CONFIG_MMC_TOSHIBA_PCI     # Fedora setting: m [4]
 ./scripts/config --module CONFIG_MMC_SDHCI_XENON     # Fedora setting: m [4]
 
-# Force MMC/SD/eMMC drivers to be built-in (Critical for booting)
-
-./scripts/config --enable CONFIG_MMC
-./scripts/config --enable CONFIG_MMC_BLOCK
-./scripts/config --enable CONFIG_MMC_SDHCI
-./scripts/config --enable CONFIG_MMC_SDHCI_PCI
-./scripts/config --enable CONFIG_MMC_SDHCI_ACPI
-
-# ComposeFS required for Fedora atomic
-./scripts/config --enable CONFIG_OVERLAY_FS
-./scripts/config --enable CONFIG_BLK_DEV_LOOP
-./scripts/config --enable CONFIG_EROFS_FS
-
 # Power Management & ACPI
 ./scripts/config --module CONFIG_ACPI
 ./scripts/config --module CONFIG_BATTERY
@@ -386,11 +363,10 @@ make mrproper
 ./scripts/config --module CONFIG_MMC
 ./scripts/config --module CONFIG_CRYPTO
 
-# Force Realtek Wi-Fi drivers to be Modules (so they can find firmware in /lib/firmware)
-./scripts/config --module CONFIG_RTW88
-./scripts/config --module CONFIG_RTW88_CORE
-./scripts/config --module CONFIG_RTW88_PCI
-./scripts/config --module CONFIG_RTW88_8822CE
+# ComposeFS required for Fedora atomic
+./scripts/config --enable CONFIG_OVERLAY_FS
+./scripts/config --enable CONFIG_BLK_DEV_LOOP
+./scripts/config --enable CONFIG_EROFS_FS
 
 # Fix Makefiles for C11 standard
 echo "HOSTCFLAGS += -std=gnu11" >> Makefile
