@@ -363,6 +363,11 @@ make mrproper
 ./scripts/config --module CONFIG_MMC
 ./scripts/config --module CONFIG_CRYPTO
 
+# ComposeFS
+./scripts/config --enable CONFIG_OVERLAY_FS
+./scripts/config --enable CONFIG_BLK_DEV_LOOP
+./scripts/config --enable CONFIG_EROFS_FS
+
 # Fix Makefiles for C11 standard
 echo "HOSTCFLAGS += -std=gnu11" >> Makefile
 echo "REALMODE_CFLAGS += -std=gnu11" >> arch/x86/Makefile
