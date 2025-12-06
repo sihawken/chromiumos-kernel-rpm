@@ -386,6 +386,12 @@ make mrproper
 ./scripts/config --module CONFIG_MMC
 ./scripts/config --module CONFIG_CRYPTO
 
+# Force Realtek Wi-Fi drivers to be Modules (so they can find firmware in /lib/firmware)
+./scripts/config --module CONFIG_RTW88
+./scripts/config --module CONFIG_RTW88_CORE
+./scripts/config --module CONFIG_RTW88_PCI
+./scripts/config --module CONFIG_RTW88_8822CE
+
 # Fix Makefiles for C11 standard
 echo "HOSTCFLAGS += -std=gnu11" >> Makefile
 echo "REALMODE_CFLAGS += -std=gnu11" >> arch/x86/Makefile
