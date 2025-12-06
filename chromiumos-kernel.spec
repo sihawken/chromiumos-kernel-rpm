@@ -363,17 +363,6 @@ make mrproper
 ./scripts/config --module CONFIG_MMC
 ./scripts/config --module CONFIG_CRYPTO
 
-# Required for Fedora Silverblue/Kinoite (OSTree)
-./scripts/config --enable CONFIG_OVERLAY_FS
-./scripts/config --enable CONFIG_EROFS_FS
-./scripts/config --enable CONFIG_EROFS_FS_PZIP
-./scripts/config --enable CONFIG_EROFS_FS_ZIP
-
-./scripts/config --enable CONFIG_FANOTIFY
-./scripts/config --enable CONFIG_FANOTIFY_ACCESS_PERMISSIONS
-
-./scripts/config --enable CONFIG_FS_VERITY
-
 # Fix Makefiles for C11 standard
 echo "HOSTCFLAGS += -std=gnu11" >> Makefile
 echo "REALMODE_CFLAGS += -std=gnu11" >> arch/x86/Makefile
