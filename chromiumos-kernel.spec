@@ -389,14 +389,10 @@ make mrproper
 # [FIX] Force Autofs to be built-in to satisfy systemd
 ./scripts/config --enable CONFIG_AUTOFS_FS
 
-# ---------------------------------------------------------
-# CRITICAL FIX FOR FEDORA BOOT (EFI & Systemd)
-# ---------------------------------------------------------
+# 1. Boot & EFI Support (Fixes "Failed to register efivars")
 ./scripts/config --enable CONFIG_EFI
 ./scripts/config --enable CONFIG_EFI_STUB
 ./scripts/config --enable CONFIG_EFIVAR_FS
-./scripts/config --enable CONFIG_EFI_VARS_PSTORE
-./scripts/config --enable CONFIG_EFI_RUNTIME_WRAPPERS
 
 # 2. Filesystem Layers (Fixes "No such device" for ComposeFS)
 ./scripts/config --enable CONFIG_OVERLAY_FS
